@@ -5,16 +5,23 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
+//Importer la relation de Laravel, pas une classe imaginaire dans Models
+use Illuminate\Database\Eloquent\Relations\HasMany; 
+
 class Recette extends Model
 {
     use HasFactory;
 
-    // Colonnes que l’on peut remplir via mass-assignment
-    protected $fillable = ['user_id', 'titre', 'description', 'instructions', 'image_path'];
-
-    // Relation avec l’utilisateur
-    public function user()
+    public function ingredients(): HasMany
     {
-        return $this->belongsTo(User::class);
+        // En utilisant ::class, PHP vérifie l'existence de la classe
+        return $this->hasMany(Ingredient::class);
+    }
+
+    public function getRatingAttribute() {
+        $likes = $this->likes()->count();
+        // Base de 3.5 étoiles, +0.1 par like, max 5.0
+        $note = 3.5 + ($likes * 0.1);
+        return min(5, $note);
     }
 }

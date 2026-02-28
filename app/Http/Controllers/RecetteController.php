@@ -10,8 +10,8 @@ class RecetteController extends Controller
     // Méthode pour afficher toutes les recettes
     public function index()
     {
-        // On récupère toutes les recettes avec leurs utilisateurs (relation user)
-        $recettes = Recette::with('user')->get();
+        // On récupère toutes les recettes avec leurs ingredients (relation recettes ingredients)
+        $recettes = Recette::with('ingredients')->get();
 
         // On envoie les recettes à la vue "home"
         return view('home', compact('recettes'));

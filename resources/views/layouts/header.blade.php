@@ -6,11 +6,13 @@
     <title>OURA TABLE | L'assiette ouverte</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://unpkg.com/lucide@latest"></script>
+    <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
     <style>
         /* Petit ajout pour une transition fluide du menu mobile */
         #mobile-menu {
             transition: all 0.3s ease-in-out;
         }
+        [x-cloak] { display: none !important; }
     </style>
 </head>
 <body class="bg-[#fcfaf8] font-sans">
@@ -36,7 +38,7 @@
                 </div>
 
                 <div class="hidden md:flex space-x-8 items-center font-bold text-xs tracking-wide text-gray-600">
-                    <a href="/recipes" class="group flex items-center gap-2 hover:text-orange-500 transition-colors">
+                    <a href="/" class="group flex items-center gap-2 hover:text-orange-500 transition-colors">
                         <i data-lucide="utensils" class="w-4 h-4 text-gray-400 group-hover:text-orange-500"></i> 
                         RECETTES
                     </a>
@@ -44,7 +46,7 @@
                         <i data-lucide="users" class="w-4 h-4 text-gray-400 group-hover:text-orange-500"></i> 
                         COMMUNAUTÉ
                     </a>
-                    <a href="/login" class="bg-orange-500 text-white px-6 py-2.5 rounded-full hover:bg-orange-600 hover:shadow-lg hover:shadow-orange-200 transition-all duration-300">
+                    <a href="{{ route('login') }}" class="bg-orange-500 text-white px-6 py-2.5 rounded-full hover:bg-orange-600 hover:shadow-lg hover:shadow-orange-200 transition-all duration-300">
                         CONNEXION
                     </a>
                 </div>
@@ -78,7 +80,7 @@
         @yield('content')
     </main>
 
-    <script>
+    <script >
         // Initialisation des icônes
         lucide.createIcons();
 

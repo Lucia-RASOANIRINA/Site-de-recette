@@ -3,7 +3,7 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
-use App\Models\Recette; // Assure-toi que le modèle existe et est lié à la table
+use App\Models\Recette; 
 
 class RecetteController extends Controller
 {

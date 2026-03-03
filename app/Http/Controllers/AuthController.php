@@ -32,30 +32,40 @@ class AuthController extends Controller
             'email' => $request->email,
             'password' => Hash::make($request->password),
         ]);
+        // Redirection avec un message plus chaleureux
+        return redirect()->route('login')->with('success', 'Bienvenue à notre table ! Votre place est prête, connectez-vous pour commencer la dégustation.');
 
-        // Redirection vers le formulaire de connexion (qui est le panneau par défaut)
-        return redirect()->route('login')->with('success', 'Inscription réussie ! Connectez-vous.');
     }
 
-    // CONNEXION
-    public function login(Request $request)
+   public function login(Request $request)
 {
     $credentials = $request->validate([
         'email' => 'required|email',
         'password' => 'required',
     ]);
 
-    // DEBUG : Décommente la ligne suivante pour voir ce que Laravel reçoit
-    // dd($credentials); 
+    // 1. Chercher l'utilisateur par son email
+    $user = User::where('email', $credentials['email'])->first();
 
-    if (Auth::attempt($credentials)) {
-        $request->session()->regenerate();
-        return redirect()->intended('/');
+    // 2. Vérifier si l'utilisateur existe
+    if (!$user) {
+        return back()->withErrors([
+            'email' => 'Ce compte n\'existe pas à notre table.',
+        ])->withInput($request->only('email'));
     }
 
-    // Si on arrive ici, c'est que Auth::attempt a renvoyé FALSE
-    return back()->withErrors([
-        'email' => 'Identifiants incorrects ou compte non reconnu.',
-    ])->withInput();
+    // 3. Vérifier si le mot de passe est correct
+    if (!Hash::check($credentials['password'], $user->password)) {
+        return back()->withErrors([
+            'password' => 'Le mot de passe est incorrect.',
+        ])->withInput($request->only('email'));
+    }
+
+    // 4. Si tout est bon, on connecte l'utilisateur
+    Auth::login($user);
+    $request->session()->regenerate();
+
+    return redirect()->intended('/')
+        ->with('success', 'Heureux de vous revoir ! Votre couvert est mis.');
 }
 }

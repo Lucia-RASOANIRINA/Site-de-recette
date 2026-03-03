@@ -8,24 +8,35 @@
     <div class="absolute top-0 -left-4 w-64 h-64 bg-orange-100 rounded-full mix-blend-multiply filter blur-3xl opacity-60 animate-blob"></div>
     <div class="absolute bottom-0 -right-4 w-64 h-64 bg-orange-50 rounded-full mix-blend-multiply filter blur-3xl opacity-60 animate-blob animation-delay-2000"></div>
 
-    <div class="max-w-4xl w-full h-[520px] relative shadow-2xl rounded-[35px] overflow-hidden bg-white/90 backdrop-blur-xl border border-white flex" id="main-auth-box">
+    <div class="max-w-4xl w-full h-[460px] relative shadow-2xl rounded-[35px] overflow-hidden bg-white/90 backdrop-blur-xl border border-white flex" id="main-auth-box">
         
         <div class="w-full flex relative">
             
             <div id="login-section" class="w-1/2 p-6 flex flex-col justify-center transition-all duration-700">
                 <h2 class="text-2xl font-black text-gray-900 uppercase tracking-tighter text-center mb-1">Connexion</h2>
                 <p class="text-gray-400 text-[11px] font-medium text-center mb-4">Bon retour à notre table !</p>
-
                 @if(session('success'))
-                    <div class="mb-4 p-2 bg-green-50 border border-green-200 text-green-600 text-[10px] font-bold rounded-xl text-center uppercase tracking-widest animate-pulse">
-                        {{ session('success') }}
+                    <div class="mb-6 p-4 bg-orange-50 border-l-4 border-orange-500 rounded-r-2xl shadow-sm animate-bounce-short">
+                        <div class="flex items-center">
+                            <div class="flex-shrink-0 bg-orange-500 p-2 rounded-full">
+                                <i data-lucide="utensils" class="w-4 h-4 text-white"></i>
+                            </div>
+                            <div class="ml-3">
+                                <h3 class="text-xs font-black text-orange-500 uppercase tracking-widest">
+                                    Inscription réussie !
+                                </h3>
+                                <p class="text-[10px] text-gray-400  font-medium  mt-0.5">
+                                    {{ session('success') }}
+                                </p>
+                            </div>
+                        </div>
                     </div>
                 @endif
                 
                 <form action="{{ route('login') }}" method="POST" class="space-y-3 max-w-[280px] mx-auto w-full">
                     @csrf
                     <div class="relative flex items-center">
-                        <input type="email" name="email" value="{{ old('email') }}" required placeholder="Email" 
+                        <input type="email" name="email" value="{{ !old('name') ? old('email') : '' }}" required placeholder="Email" 
                             class="w-full pr-12 pl-5 py-4 bg-gray-100/50 border @error('email') border-red-400 @else border-gray-100 @enderror rounded-2xl focus:outline-none focus:ring-2 focus:ring-orange-400 text-sm shadow-sm transition-all">
                         <i data-lucide="mail" class="absolute right-4 w-5 h-5 text-gray-400"></i>
                     </div>
@@ -71,7 +82,7 @@
                     </div>
 
                     <div class="relative flex items-center">
-                        <input type="email" name="email" value="{{ old('email') }}" required placeholder="Email" class="w-full pr-12 pl-4 py-3 bg-gray-100/50 border @if($errors->has('email') && old('name')) border-red-400 @else border-gray-100 @enderror rounded-2xl focus:outline-none focus:ring-2 focus:ring-orange-400 text-sm">
+                        <input type="email" name="email" value="{{ old('name') ? old('email') : '' }}" required placeholder="Email" class="w-full pr-12 pl-4 py-3 bg-gray-100/50 border @if($errors->has('email') && old('name')) border-red-400 @else border-gray-100 @enderror rounded-2xl focus:outline-none focus:ring-2 focus:ring-orange-400 text-sm">
                         <i data-lucide="mail" class="absolute right-4 w-5 h-5 text-gray-400"></i>
                     </div>
                     @if($errors->has('email') && old('name'))

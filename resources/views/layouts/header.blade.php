@@ -13,6 +13,11 @@
             transition: all 0.3s ease-in-out;
         }
         [x-cloak] { display: none !important; }
+        @keyframes bounce-short {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-4px); }
+        }
+        .animate-bounce-short { animation: bounce-short 0.5s ease-in-out; }
     </style>
 </head>
 <body class="bg-[#fcfaf8] font-sans">

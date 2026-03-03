@@ -3,17 +3,79 @@
 @section('content')
 <script defer src="https://unpkg.com/alpinejs@3.x.x/dist/cdn.min.min.js"></script>
 
-<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
-    <div class="text-center mb-16">
-        <h2 class="text-gray-900 tracking-tighter">
-            <div class="text-2xl font-black tracking-tighter text-orange-500 italic">
-                Notre <span class="text-gray-800">Top sélection</span>
+<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+    <div class="flex flex-col md:flex-row items-center justify-between gap-12" 
+         x-data="{ 
+            currentIndex: 0, 
+            total: {{ $recettes->count() }},
+            next() { this.currentIndex = (this.currentIndex + 1) % this.total },
+            prev() { this.currentIndex = (this.currentIndex - 1 + this.total) % this.total }
+         }">
+        
+        <div class="w-full md:w-1/2 text-center md:text-left">
+            <h2 class="text-gray-900 tracking-tighter">
+                <div class="text-4xl md:text-5xl font-black tracking-tighter text-orange-500 italic leading-none">
+                    Notre <span class="text-gray-800 block md:inline">Top sélection</span>
+                </div>
+            </h2>
+            <p class="text-gray-400 font-medium text-sm mt-6 tracking-[0.1em] max-w-md mx-auto md:mx-0">
+                L'excellence de la <span class="text-gray-800 font-bold">Table Oura</span>. 
+                Explorez nos <span x-text="total"></span> créations via les commandes tactiles.
+            </p>
+            <div class="mt-8 flex items-center justify-center md:justify-start gap-2">
+                <span class="h-[1px] w-8 bg-orange-500"></span>
+                <span class="text-[10px] font-black uppercase tracking-[0.3em] text-orange-500 italic">Incontournable</span>
             </div>
-        </h2>
-        <p class="text-gray-400 font-medium text-sm mt-4 tracking-[0.1em]">
-            L'excellence de la **Table Oura** partagée par la communauté.
-        </p>
+        </div>
+
+        <div class="w-full md:w-1/2 relative flex justify-center items-center h-[450px]">
+            
+            <button @click="prev()" 
+                    class="absolute left-4 md:-left-4 z- p-3 bg-white/90 hover:bg-orange-500 text-gray-800 hover:text-white rounded-full shadow-2xl transition-all duration-300 active:scale-90 border border-gray-100 group">
+                <i data-lucide="chevron-left" class="w-6 h-6 group-hover:-translate-x-1 transition-transform"></i>
+            </button>
+
+            <button @click="next()" 
+                    class="absolute right-4 md:-right-4 z- p-3 bg-white/90 hover:bg-orange-500 text-gray-800 hover:text-white rounded-full shadow-2xl transition-all duration-300 active:scale-90 border border-gray-100 group">
+                <i data-lucide="chevron-right" class="w-6 h-6 group-hover:translate-x-1 transition-transform"></i>
+            </button>
+
+            @if($recettes->count() > 0)
+                @foreach($recettes as $index => $recette)
+                    <div 
+                        class="absolute transition-all duration-700 ease-[cubic-bezier(0.23,1,0.32,1)]"
+                        :style="'z-index: ' + (currentIndex === {{ $index }} ? 50 : 20 - Math.abs(currentIndex - {{ $index }}))"
+                        :class="{
+                            {{-- Image Centrale Active --}}
+                            'scale-110 rotate-0 opacity-100 translate-x-0': currentIndex === {{ $index }},
+                            
+                            {{-- Images déjà passées (Cachées ou décalées vers la gauche) --}}
+                            'scale-90 -rotate-12 -translate-x-40 opacity-0 pointer-events-none': currentIndex > {{ $index }},
+                            
+                            {{-- Prochaine image (Empilée juste derrière à droite) --}}
+                            'scale-100 rotate-6 translate-x-10 opacity-70 blur-[1px]': currentIndex < {{ $index }} && {{ $index }} === currentIndex + 1,
+                            
+                            {{-- Images lointaines à droite --}}
+                            'scale-90 rotate-12 translate-x-20 opacity-30 blur-[2px]': currentIndex < {{ $index }} && {{ $index }} > currentIndex + 1,
+                        }"
+                    >
+                        <div class="relative group">
+                            <img src="{{ asset('storage/' . $recette->image_path) }}" 
+                                 class="w-48 h-64 md:w-64 md:h-80 object-cover rounded-[2.5rem] shadow-2xl border-[10px] border-white transition-all duration-300 group-hover:scale-[1.03] group-hover:border-orange-400">
+                            
+                            @if($loop->first)
+                                <div class="absolute -top-4 -left-4 bg-gray-900 text-white p-3 rounded-2xl shadow-xl">
+                                    <i data-lucide="award" class="w-5 h-5 text-orange-400"></i>
+                                </div>
+                            @endif
+                        </div>
+                    </div>
+                @endforeach
+            @endif
+        </div>
+
     </div>
+</div>
 
     <div class="grid grid-cols-1 md:grid-cols-3 gap-12 pt-10">
         @foreach($recettes as $recette)

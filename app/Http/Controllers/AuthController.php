@@ -65,7 +65,7 @@ class AuthController extends Controller
     Auth::login($user);
     $request->session()->regenerate();
 
-    return redirect()->intended('/')
+    return redirect()->intended('/UserHome')
         ->with('success', 'Heureux de vous revoir ! Votre couvert est mis.');
 }
 }

@@ -185,6 +185,29 @@ document.addEventListener("DOMContentLoaded", function() {
         movePanel('left');
     @endif
 });
+
+// Détection de l'ancre dans l'URL pour basculer automatiquement
+function checkHash() {
+    const hash = window.location.hash;
+    if (hash === '#register') {
+        movePanel('left'); // Déplace le panneau vers l'inscription
+    } else if (hash === '#login') {
+        movePanel('right'); // Déplace le panneau vers la connexion
+    }
+}
+
+// Exécuter au chargement de la page
+document.addEventListener("DOMContentLoaded", function() {
+    checkHash();
+    
+    // Écouter aussi les changements d'ancre si l'utilisateur est déjà sur la page
+    window.addEventListener('hashchange', checkHash);
+
+    // Ton code existant pour la détection des erreurs Laravel
+    @if($errors->has('phone') || $errors->has('name') || $errors->has('password') || (old('name') && $errors->has('email')))
+        movePanel('left');
+    @endif
+});
 </script>
 
 <style>

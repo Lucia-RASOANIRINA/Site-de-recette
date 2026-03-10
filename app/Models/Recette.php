@@ -18,10 +18,9 @@ class Recette extends Model
         return $this->hasMany(Ingredient::class);
     }
 
-    public function getRatingAttribute() {
-        $likes = $this->likes()->count();
-        // Base de 3.5 étoiles, +0.1 par like, max 5.0
-        $note = 3.5 + ($likes * 0.1);
-        return min(5, $note);
+    public function likes()
+    {
+        // On précise le modèle Like (que nous allons vérifier à l'étape 2)
+        return $this->hasMany(Like::class);
     }
 }

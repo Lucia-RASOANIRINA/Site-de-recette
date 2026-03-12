@@ -13,103 +13,112 @@
         <div class="w-full flex relative">
             
             <div id="login-section" class="w-1/2 p-6 flex flex-col justify-center transition-all duration-700">
-                <h2 class="text-2xl font-black text-gray-900 uppercase tracking-tighter text-center mb-1">Connexion</h2>
-                <p class="text-gray-400 text-[11px] font-medium text-center mb-4">Bon retour à notre table !</p>
-                @if(session('success'))
-                    <div class="mb-6 p-4 bg-orange-50 border-l-4 border-orange-500 rounded-r-2xl shadow-sm animate-bounce-short">
-                        <div class="flex items-center">
-                            <div class="flex-shrink-0 bg-orange-500 p-2 rounded-full">
-                                <i data-lucide="utensils" class="w-4 h-4 text-white"></i>
-                            </div>
-                            <div class="ml-3">
-                                <h3 class="text-xs font-black text-orange-500 uppercase tracking-widest">
-                                    Inscription réussie !
-                                </h3>
-                                <p class="text-[10px] text-gray-400  font-medium  mt-0.5">
-                                    {{ session('success') }}
-                                </p>
-                            </div>
-                        </div>
-                    </div>
-                @endif
-                
-                <form action="{{ route('login') }}" method="POST" class="space-y-3 max-w-[280px] mx-auto w-full">
-                    @csrf
-                    <div class="relative flex items-center">
-                        <input type="email" name="email" value="{{ !old('name') ? old('email') : '' }}" required placeholder="Email" 
-                            class="w-full pr-12 pl-5 py-4 bg-gray-100/50 border @error('email') border-red-400 @else border-gray-100 @enderror rounded-2xl focus:outline-none focus:ring-2 focus:ring-orange-400 text-sm shadow-sm transition-all">
-                        <i data-lucide="mail" class="absolute right-4 w-5 h-5 text-gray-400"></i>
-                    </div>
-                    @if ($errors->has('email') && !old('name'))
-                        <p class="text-[9px] text-red-500 font-bold mt-1 ml-2">{{ $errors->first('email') }}</p>
-                    @endif
-                    
-                    <div class="relative flex items-center">
-                        <input type="password" id="login-pass" name="password" required placeholder="Mot de passe" 
-                            class="w-full pr-12 pl-5 py-4 bg-gray-100/50 border border-gray-100 rounded-2xl focus:outline-none focus:ring-2 focus:ring-orange-400 text-sm shadow-sm transition-all">
-                        <button type="button" onclick="togglePass('login-pass', 'eye-login')" class="absolute right-4 text-gray-400 hover:text-orange-500">
-                            <i id="eye-login" data-lucide="eye" class="w-5 h-5"></i>
-                        </button>
-                    </div>
-
-                    <button type="submit" class="w-full bg-orange-500 text-white font-black py-4 rounded-2xl hover:bg-orange-600 shadow-lg transition-all active:scale-95 uppercase tracking-widest text-xs mt-2">
-                        Se connecter
-                    </button>
-                </form>
+    <h2 class="text-2xl font-black text-gray-900 uppercase tracking-tighter text-center mb-1">Connexion</h2>
+    <p class="text-gray-400 text-[11px] font-medium text-center mb-4">Bon retour à notre table !</p>
+    @if(session('success'))
+        <div class="mb-6 p-4 bg-orange-50 border-l-4 border-orange-500 rounded-r-2xl shadow-sm animate-bounce-short">
+            <div class="flex items-center">
+                <div class="flex-shrink-0 bg-orange-500 p-2 rounded-full">
+                    <i data-lucide="utensils" class="w-4 h-4 text-white"></i>
+                </div>
+                <div class="ml-3">
+                    <h3 class="text-xs font-black text-orange-500 uppercase tracking-widest">
+                        Inscription réussie !
+                    </h3>
+                    <p class="text-[10px] text-gray-400  font-medium  mt-0.5">
+                        {{ session('success') }}
+                    </p>
+                </div>
             </div>
+        </div>
+    @endif
+    
+    <form action="{{ route('login') }}" method="POST" class="space-y-3 max-w-[280px] mx-auto w-full">
+        @csrf
+        <div class="relative flex items-center">
+            <input type="email" name="email" value="{{ !old('name') ? old('email') : '' }}" required placeholder="Email" 
+                class="w-full pr-12 pl-5 py-4 bg-gray-100/50 border @error('email') border-red-400 @else border-gray-100 @enderror rounded-2xl focus:outline-none focus:ring-2 focus:ring-orange-400 text-sm shadow-sm transition-all">
+            <i data-lucide="mail" class="absolute right-4 w-5 h-5 text-gray-400"></i>
+        </div>
+        @if ($errors->has('email') && !old('name'))
+            <p class="text-[12px] text-red-500 font-bold mt-1 ml-2">{{ $errors->first('email') }}</p>
+        @endif
+        
+        <div class="relative flex items-center">
+            <input type="password" id="login-pass" name="password" required placeholder="Mot de passe" 
+                class="w-full pr-12 pl-5 py-4 bg-gray-100/50 border @error('password') border-red-400 @else border-gray-100 @enderror rounded-2xl focus:outline-none focus:ring-2 focus:ring-orange-400 text-sm shadow-sm transition-all">
+            <button type="button" onclick="togglePass('login-pass', 'eye-login')" class="absolute right-4 text-gray-400 hover:text-orange-500">
+                <i id="eye-login" data-lucide="eye" class="w-5 h-5"></i>
+            </button>
+        </div>
+        
+        {{-- AFFICHAGE DE L'ERREUR DE MOT DE PASSE UNIQUEMENT POUR LA CONNEXION --}}
+        @if($errors->has('password') && !old('name'))
+            <p class="text-[12px] text-red-500 font-bold mt-1 ml-2">{{ $errors->first('password') }}</p>
+        @endif
+
+        <button type="submit" class="w-full bg-orange-500 text-white font-black py-4 rounded-2xl hover:bg-orange-600 shadow-lg transition-all active:scale-95 uppercase tracking-widest text-xs mt-2">
+            Se connecter
+        </button>
+    </form>
+</div>
 
             <div id="register-section" class="w-1/2 p-6 flex flex-col justify-center transition-all duration-700">
-                <h2 class="text-2xl font-black text-gray-900 uppercase tracking-tighter text-center mb-1">S'inscrire</h2>
-                <p class="text-gray-400 text-[11px] text-center mb-4">Créez votre profil culinaire.</p>
-                
-                <form action="/register" method="POST" class="space-y-2 max-w-[320px] mx-auto w-full">
-                    @csrf
-                    <div class="grid grid-cols-2 gap-2">
-                        <div>
-                            <div class="relative flex items-center">
-                                <input type="text" name="name" value="{{ old('name') }}" required placeholder="Nom" class="w-full pr-10 pl-4 py-3 bg-gray-100/50 border @error('name') border-red-400 @else border-gray-100 @enderror rounded-2xl focus:outline-none focus:ring-2 focus:ring-orange-400 text-sm">
-                                <i data-lucide="user" class="absolute right-3 w-4 h-4 text-gray-400"></i>
-                            </div>
-                            @error('name') <p class="text-[8px] text-red-500 mt-1 ml-1">{{ $message }}</p> @enderror
-                        </div>
-                        <div>
-                            <div class="relative flex items-center">
-                                <input type="text" name="phone" value="{{ old('phone') }}" required placeholder="Tél" class="w-full pr-10 pl-4 py-3 bg-gray-100/50 border @error('phone') border-red-400 @else border-gray-100 @enderror rounded-2xl focus:outline-none focus:ring-2 focus:ring-orange-400 text-sm">
-                                <i data-lucide="phone" class="absolute right-3 w-4 h-4 text-gray-400"></i>
-                            </div>
-                            @error('phone') <p class="text-[8px] text-red-500 mt-1 ml-1">{{ $message }}</p> @enderror
-                        </div>
-                    </div>
-
-                    <div class="relative flex items-center">
-                        <input type="email" name="email" value="{{ old('name') ? old('email') : '' }}" required placeholder="Email" class="w-full pr-12 pl-4 py-3 bg-gray-100/50 border @if($errors->has('email') && old('name')) border-red-400 @else border-gray-100 @enderror rounded-2xl focus:outline-none focus:ring-2 focus:ring-orange-400 text-sm">
-                        <i data-lucide="mail" class="absolute right-4 w-5 h-5 text-gray-400"></i>
-                    </div>
-                    @if($errors->has('email') && old('name'))
-                        <p class="text-[8px] text-red-500 mt-1 ml-1">{{ $errors->first('email') }}</p>
-                    @endif
-
-                    <div class="grid grid-cols-2 gap-2">
-                        <div>
-                            <div class="relative flex items-center">
-                                <input type="password" id="reg-pass" name="password" required placeholder="MDP" class="w-full pr-10 pl-4 py-3 bg-gray-100/50 border @error('password') border-red-400 @else border-gray-100 @enderror rounded-2xl focus:outline-none focus:ring-2 focus:ring-orange-400 text-sm">
-                                <button type="button" onclick="togglePass('reg-pass', 'eye-reg')" class="absolute right-3"><i id="eye-reg" data-lucide="eye" class="w-4 h-4 text-gray-400"></i></button>
-                            </div>
-                        </div>
-                        <div>
-                            <div class="relative flex items-center">
-                                <input type="password" name="password_confirmation" required placeholder="Confirmer" class="w-full pr-10 pl-4 py-3 bg-gray-100/50 border border-gray-100 rounded-2xl focus:outline-none focus:ring-2 focus:ring-orange-400 text-sm">
-                                <i data-lucide="lock" class="absolute right-3 w-4 h-4 text-gray-400"></i>
-                            </div>
-                        </div>
-                    </div>
-                    @error('password') <p class="text-[8px] text-red-500 mt-1 ml-1 text-center font-bold">{{ $message }}</p> @enderror
-
-                    <button type="submit" class="w-full bg-orange-500 text-white font-black py-4 rounded-2xl hover:bg-orange-600 transition-all uppercase tracking-widest text-[10px] mt-1 shadow-md">
-                        Créer mon compte
-                    </button>
-                </form>
+    <h2 class="text-2xl font-black text-gray-900 uppercase tracking-tighter text-center mb-1">S'inscrire</h2>
+    <p class="text-gray-400 text-[11px] text-center mb-4">Créez votre profil culinaire.</p>
+    
+    <form action="/register" method="POST" class="space-y-2 max-w-[320px] mx-auto w-full">
+        @csrf
+        <div class="grid grid-cols-2 gap-2">
+            <div>
+                <div class="relative flex items-center">
+                    <input type="text" name="name" value="{{ old('name') }}" required placeholder="Nom" class="w-full pr-10 pl-4 py-3 bg-gray-100/50 border @error('name') border-red-400 @else border-gray-100 @enderror rounded-2xl focus:outline-none focus:ring-2 focus:ring-orange-400 text-sm">
+                    <i data-lucide="user" class="absolute right-3 w-4 h-4 text-gray-400"></i>
+                </div>
+                @error('name') <p class="text-[10px] text-red-500 mt-1 ml-1">{{ $message }}</p> @enderror
             </div>
+            <div>
+                <div class="relative flex items-center">
+                    <input type="text" name="phone" value="{{ old('phone') }}" required placeholder="Tél" class="w-full pr-10 pl-4 py-3 bg-gray-100/50 border @error('phone') border-red-400 @else border-gray-100 @enderror rounded-2xl focus:outline-none focus:ring-2 focus:ring-orange-400 text-sm">
+                    <i data-lucide="phone" class="absolute right-3 w-4 h-4 text-gray-400"></i>
+                </div>
+                @error('phone') <p class="text-[12px] text-red-500 mt-1 ml-1">{{ $message }}</p> @enderror
+            </div>
+        </div>
+
+        <div class="relative flex items-center">
+            <input type="email" name="email" value="{{ old('name') ? old('email') : '' }}" required placeholder="Email" class="w-full pr-12 pl-4 py-3 bg-gray-100/50 border @if($errors->has('email') && old('name')) border-red-400 @else border-gray-100 @enderror rounded-2xl focus:outline-none focus:ring-2 focus:ring-orange-400 text-sm">
+            <i data-lucide="mail" class="absolute right-4 w-5 h-5 text-gray-400"></i>
+        </div>
+        @if($errors->has('email') && old('name'))
+            <p class="text-[12px] text-red-500 mt-1 ml-1">{{ $errors->first('email') }}</p>
+        @endif
+
+        <div class="grid grid-cols-2 gap-2">
+            <div>
+                <div class="relative flex items-center">
+                    <input type="password" id="reg-pass" name="password" required placeholder="MDP" class="w-full pr-10 pl-4 py-3 bg-gray-100/50 border @error('password') border-red-400 @else border-gray-100 @enderror rounded-2xl focus:outline-none focus:ring-2 focus:ring-orange-400 text-sm">
+                    <button type="button" onclick="togglePass('reg-pass', 'eye-reg')" class="absolute right-3"><i id="eye-reg" data-lucide="eye" class="w-4 h-4 text-gray-400"></i></button>
+                </div>
+            </div>
+            <div>
+                <div class="relative flex items-center">
+                    <input type="password" name="password_confirmation" required placeholder="Confirmer" class="w-full pr-10 pl-4 py-3 bg-gray-100/50 border border-gray-100 rounded-2xl focus:outline-none focus:ring-2 focus:ring-orange-400 text-sm">
+                    <i data-lucide="lock" class="absolute right-3 w-4 h-4 text-gray-400"></i>
+                </div>
+            </div>
+        </div>
+        
+        {{-- CORRECTION ICI : N'afficher l'erreur mot de passe que si on vient de l'inscription --}}
+        @if($errors->has('password') && old('name'))
+            <p class="text-[12px] text-red-500 mt-1 ml-1 text-center font-bold">{{ $errors->first('password') }}</p>
+        @endif
+
+        <button type="submit" class="w-full bg-orange-500 text-white font-black py-4 rounded-2xl hover:bg-orange-600 transition-all uppercase tracking-widest text-[10px] mt-1 shadow-md">
+            Créer mon compte
+        </button>
+    </form>
+</div>
         </div>
 
         <div id="overlay-panel" class="absolute top-0 right-0 w-1/2 h-full bg-orange-500 transition-all duration-700 ease-in-out z-20 flex flex-col justify-center items-center text-white px-8 text-center shadow-2xl">
@@ -152,7 +161,7 @@ function movePanel(direction) {
         setTimeout(() => {
             toReg.classList.add('hidden');
             toLog.classList.remove('hidden');
-            lucide.createIcons(); // Recharge les icônes après changement de DOM
+            lucide.createIcons();
         }, 300);
     } else {
         overlay.style.transform = 'translateX(0%)';
@@ -177,35 +186,32 @@ function togglePass(inputId, iconId) {
     lucide.createIcons();
 }
 
-// AUTO-DETECTION DES ERREURS POUR LE PLACEMENT DU PANNEAU
-document.addEventListener("DOMContentLoaded", function() {
-    // Si on a des erreurs d'inscription (indiquées par la présence d'un 'old name')
-    // ou des erreurs spécifiques au téléphone/password, on glisse à gauche.
-    @if($errors->has('phone') || $errors->has('name') || $errors->has('password') || (old('name') && $errors->has('email')))
-        movePanel('left');
-    @endif
-});
-
 // Détection de l'ancre dans l'URL pour basculer automatiquement
 function checkHash() {
     const hash = window.location.hash;
     if (hash === '#register') {
-        movePanel('left'); // Déplace le panneau vers l'inscription
+        movePanel('left');
     } else if (hash === '#login') {
-        movePanel('right'); // Déplace le panneau vers la connexion
+        movePanel('right');
     }
 }
 
-// Exécuter au chargement de la page
+// UN SEUL ÉCOUTEUR D'ÉVÉNEMENTS POUR TOUT
 document.addEventListener("DOMContentLoaded", function() {
+    // Vérifier l'ancre dans l'URL
     checkHash();
     
-    // Écouter aussi les changements d'ancre si l'utilisateur est déjà sur la page
+    // Écouter les changements d'ancre
     window.addEventListener('hashchange', checkHash);
 
-    // Ton code existant pour la détection des erreurs Laravel
-    @if($errors->has('phone') || $errors->has('name') || $errors->has('password') || (old('name') && $errors->has('email')))
+    // Détection des erreurs d'inscription (uniquement quand on vient de l'inscription)
+    @if(old('name') || $errors->has('phone') || $errors->has('name') || (old('name') && $errors->has('email')))
         movePanel('left');
+    @endif
+    
+    // Détection des erreurs de connexion (uniquement quand on vient de la connexion)
+    @if(!old('name') && ($errors->has('email') || $errors->has('password')))
+        movePanel('right');
     @endif
 });
 </script>

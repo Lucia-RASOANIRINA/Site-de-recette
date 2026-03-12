@@ -56,7 +56,7 @@
                         OURA<span class="text-orange-500 transition-all duration-300 group-hover:drop-shadow-[0_0_8px_rgba(249,115,22,0.4)]">TABLE</span>
                     </a>
                     <div class="hidden lg:block h-8 w-px bg-gray-200"></div>
-                    <span class="hidden lg:block text-[11px] font-extrabold text-orange-600/80 uppercase tracking-[0.4em] italic leading-none">
+                    <span class="hidden lg:block text-[8px] font-extrabold text-gray-600/80 uppercase tracking-[0.4em] italic leading-none">
                         L'art de bien manger
                     </span>
                 </div>
@@ -129,8 +129,8 @@
                         </a>
                     </div>
 
-                    <div class="mt-auto border-t border-gray-100 pt-8">
-                        <a href="/login" class="block w-full bg-gray-900 text-white text-center py-5 rounded-2xl font-black text-[11px] tracking-[0.3em] shadow-xl active:scale-95 transition-transform mb-8">
+                    <div class="mt-auto border-t border-gray-200 pt-8">
+                        <a href="/login" class="block w-full bg-orange-400 text-white text-center py-5 rounded-2xl font-black text-[11px] tracking-[0.3em] shadow-xl active:scale-95 transition-transform mb-8 hover:bg-orange-500">
                             SE CONNECTER
                         </a>
                         <div class="relative py-4 flex flex-col items-center">

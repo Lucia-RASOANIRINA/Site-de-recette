@@ -4,23 +4,26 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
-
-//Importer la relation de Laravel, pas une classe imaginaire dans Models
-use Illuminate\Database\Eloquent\Relations\HasMany; 
+use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class Recette extends Model
 {
     use HasFactory;
 
+    // relation recette -> utilisateur
+    public function user(): BelongsTo
+    {
+        return $this->belongsTo(User::class);
+    }
+
     public function ingredients(): HasMany
     {
-        // En utilisant ::class, PHP vérifie l'existence de la classe
         return $this->hasMany(Ingredient::class);
     }
 
-    public function likes()
+    public function likes(): HasMany
     {
-        // On précise le modèle Like (que nous allons vérifier à l'étape 2)
         return $this->hasMany(Like::class);
     }
 }

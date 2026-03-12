@@ -19,7 +19,7 @@ class RecetteController extends Controller
     public function userIndex()
     {
         // On récupère les recettes avec ingredients ET likes
-        $recettes = Recette::with(['ingredients', 'likes'])->get();
+        $recettes = Recette::with(['ingredients', 'likes', 'user'])->get();
 
         // On renvoie vers la vue UserHome avec la variable définie
         return view('page.UserHome', compact('recettes'));
@@ -27,18 +27,24 @@ class RecetteController extends Controller
 
     // 3. Méthode pour enregistrer le Like (J'adore)
     public function like($id)
-    {
-        $recette = Recette::findOrFail($id);
-        $user = Auth::user();
+{
+    $recette = Recette::findOrFail($id);
+    $user = Auth::user();
 
-        $like = $recette->likes()->where('user_id', $user->id)->first();
+    $like = $recette->likes()->where('user_id', $user->id)->first();
 
-        if ($like) {
-            $like->delete();
-            return response()->json(['status' => 'unliked']);
-        } else {
-            $recette->likes()->create(['user_id' => $user->id]);
-            return response()->json(['status' => 'liked']);
-        }
+    if ($like) {
+        $like->delete();
+        return response()->json([
+            'status' => 'unliked',
+            'likes_count' => $recette->likes()->count()
+        ]);
+    } else {
+        $recette->likes()->create(['user_id' => $user->id]);
+        return response()->json([
+            'status' => 'liked',
+            'likes_count' => $recette->likes()->count()
+        ]);
     }
+}
 }

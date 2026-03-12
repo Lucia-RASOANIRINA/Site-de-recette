@@ -97,22 +97,66 @@
             color: #f97316;
         }
 
+        .user-icon{
+            position: relative;
+            cursor: pointer;
+        }
+
+        .user-icon:hover{
+            background-color: #fed7aa;
+            transform: scale(1.15);
+            box-shadow: 0 0 8px rgba(251,146,60,0.6);
+        }
+
+        .user-icon:hover .icon-user{
+            transform: scale(1.4);
+            color: #f97316;
+        }
+
+        /* effet petite pépite */
+        .user-icon::after{
+            content:"";
+            position:absolute;
+            width:4px;
+            height:4px;
+            background:#fb923c;
+            border-radius:50%;
+            top:-2px;
+            right:-2px;
+            opacity:0;
+            transition:all 0.3s;
+        }
+
+        .user-icon:hover::after{
+            opacity:1;
+            transform:scale(1.5);
+        }
+
         /* Animation de l'avatar au survol de la zone */
-.profile-group:hover .avatar-main {
-    transform: scale(1.1) rotate(-5deg);
-    background-color: #fff7ed; /* orange-50 */
-    color: #ea580c; /* orange-600 */
+        .profile-group:hover .avatar-main {
+            transform: scale(1.1) rotate(-5deg);
+            background-color: #fff7ed; /* orange-50 */
+            color: #ea580c; /* orange-600 */
+        }
+
+        /* Animation de la toque (salut) */
+        .profile-group:hover .floating-hat {
+            transform: scale(1.2) rotate(20deg) translateY(-2px);
+            box-shadow: 0 4px 12px rgba(249, 115, 22, 0.2);
+        }
+
+        /* Transition fluide pour les éléments internes */
+        .avatar-main, .floating-hat {
+            transition: all 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+        }
+
+        .chevron-transition{
+    transition: transform 0.3s ease;
 }
 
-/* Animation de la toque (salut) */
-.profile-group:hover .floating-hat {
-    transform: scale(1.2) rotate(20deg) translateY(-2px);
-    box-shadow: 0 4px 12px rgba(249, 115, 22, 0.2);
-}
-
-/* Transition fluide pour les éléments internes */
-.avatar-main, .floating-hat {
-    transition: all 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+/* rotation quand le bouton a la classe active */
+.group.active .chevron-transition{
+    transform: rotate(180deg);
 }
     </style>
 </head>
@@ -302,23 +346,23 @@
     });
 
     const profileBtn = document.getElementById("profile-btn");
-    const profileMenu = document.getElementById("profile-menu");
-    const chevronIcon = document.getElementById("chevron-icon");
+const profileMenu = document.getElementById("profile-menu");
 
-    profileBtn.addEventListener("click", (e) => {
-        e.stopPropagation();
-        const isHidden = profileMenu.classList.toggle("hidden");
-        if (!isHidden) {
-            chevronIcon.classList.add("chevron-rotate");
-        } else {
-            chevronIcon.classList.remove("chevron-rotate");
-        }
-    });
+profileBtn.addEventListener("click", (e) => {
+    e.stopPropagation();
 
-    document.addEventListener("click", () => {
+    profileMenu.classList.toggle("hidden");
+
+    // active la rotation
+    profileBtn.classList.toggle("active");
+});
+
+document.addEventListener("click", (e) => {
+    if (!profileBtn.contains(e.target)) {
         profileMenu.classList.add("hidden");
-        chevronIcon.classList.remove("chevron-rotate");
-    });
+        profileBtn.classList.remove("active");
+    }
+});
 
     const modal = document.getElementById("logout-modal");
     const modalContent = document.getElementById("modal-content");

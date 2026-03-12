@@ -22,7 +22,7 @@
                 <div class="relative w-2/5 min-w-[160px] flex items-center justify-center p-4 group">
 
                     <!-- Fond orange permanent -->
-                    <div class="absolute inset-y-0 left-0 w-3/4 bg-orange-300 rounded-r-[40px] transition-colors duration-500 group-hover:bg-orange-500"></div>
+                    <div class="absolute inset-y-0 left-0 w-3/4 bg-orange-500 rounded-r-[40px] transition-colors duration-500 group-hover:bg-orange-600"></div>
 
                     <div class="relative z-10 w-32 h-32 md:w-40 md:h-40 rounded-full overflow-hidden transition-transform duration-500 group-hover:scale-105 group-hover:rotate-2">
 
@@ -46,7 +46,7 @@
 
                     {{-- TITRE --}}
                     <div class="mb-3">
-                        <h3 class="font-bold text-lg text-gray-900 truncate">{{ $recette->titre }}</h3>
+                        <h3 class="font-bold text-lg text-center text-gray-900 truncate">{{ $recette->titre }}</h3>
                         <p class="text-gray-500 text-[11px] italic line-clamp-1">
                             "{{ $recette->description }}"
                         </p>
@@ -108,12 +108,12 @@
                     <div class="flex items-center justify-between mt-auto pt-4 border-t border-gray-100">
 
                         <div class="flex items-center gap-2">
-                            <div class="w-6 h-6 rounded-full bg-orange-100 flex items-center justify-center">
-                                <i data-lucide="user" class="w-3 h-3 text-orange-500"></i>
+                            <div class="user-icon w-6 h-6 rounded-full bg-orange-100 flex items-center justify-center transition-all duration-300">
+                                <i data-lucide="user" class="icon-user w-3 h-3 text-orange-500 transition-all duration-300"></i>
                             </div>
 
                             <span class="text-[10px] font-bold text-gray-800 uppercase">
-                                {{ $recette->user->name ?? 'Artisan Gourmet' }}
+                                {{ $recette->user->name ?? 'Inconnu' }}
                             </span>
                         </div>
 
@@ -145,32 +145,67 @@
 
 <script>
 function likeRecette(id, btn) {
-
-    const icon = btn.querySelector('i');
+    // Désactiver le bouton pendant la requête
+    btn.disabled = true;
+    
+    // Chercher l'icône (peut être <i> ou <svg>)
+    const icon = btn.querySelector('i') || btn.querySelector('svg');
     const span = btn.querySelector('span');
+    
+    // Vérifier que les éléments existent
+    if (!icon || !span) {
+        console.error('Éléments non trouvés:', {icon: icon, span: span});
+        btn.disabled = false;
+        return;
+    }
+    
     const isLiked = icon.classList.contains('fill-red-500');
 
+    // Animation de l'icône
+    if (!isLiked) {
+        icon.classList.add('scale-110');
+        setTimeout(() => {
+            icon.classList.remove('scale-110');
+        }, 200);
+    }
+
+    // Mise à jour UI immédiate (optimiste)
     if (isLiked) {
-        icon.classList.remove('text-red-500','fill-red-500');
+        icon.classList.remove('text-red-500', 'fill-red-500');
         icon.classList.add('text-gray-400');
         span.classList.remove('text-red-500');
         span.classList.add('text-gray-500');
-        btn.classList.replace('bg-red-50','bg-gray-100');
+        btn.classList.remove('bg-red-50');
+        btn.classList.add('bg-gray-100');
     } else {
-        icon.classList.add('text-red-500','fill-red-500');
+        icon.classList.add('text-red-500', 'fill-red-500');
         icon.classList.remove('text-gray-400');
         span.classList.add('text-red-500');
         span.classList.remove('text-gray-500');
-        btn.classList.replace('bg-gray-100','bg-red-50');
+        btn.classList.remove('bg-gray-100');
+        btn.classList.add('bg-red-50');
     }
 
-    fetch(`/recettes/${id}/like`,{
-        method:'POST',
-        headers:{
-            'X-CSRF-TOKEN':document.querySelector('meta[name="csrf-token"]').getAttribute('content'),
-            'Content-Type':'application/json',
-            'Accept':'application/json'
+    // Envoi au serveur
+    fetch(`/recettes/${id}/like`, {
+        method: 'POST',
+        headers: {
+            'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content'),
+            'Content-Type': 'application/json',
+            'Accept': 'application/json'
         }
+    })
+    .then(response => response.json())
+    .then(data => {
+        console.log('Like mis à jour:', data);
+    })
+    .catch(error => {
+        console.error('Erreur lors du like:', error);
+        // En cas d'erreur, on pourrait revenir à l'état précédent
+        // Mais pour simplifier, on garde l'état UI
+    })
+    .finally(() => {
+        btn.disabled = false;
     });
 }
 

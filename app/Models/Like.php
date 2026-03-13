@@ -10,7 +10,7 @@ class Like extends Model
     public $timestamps = false; 
     
     // On définit explicitement les champs remplissables
-    protected $fillable = ['recette_id', 'user_id'];
+    protected $fillable = ['recette_id', 'user_id', 'post_id'];
 
     public function recette()
     {
@@ -20,5 +20,9 @@ class Like extends Model
     public function user()
     {
         return $this->belongsTo(User::class);
+    }
+    public function post()
+    {
+        return $this->belongsTo(Post::class);
     }
 }

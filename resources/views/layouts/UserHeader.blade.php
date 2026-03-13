@@ -167,7 +167,7 @@
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div class="flex justify-between h-20 items-center">
 
-            <a href="/" class="flex items-center gap-4 group cursor-pointer no-underline">
+            <a href="/UserHome" class="flex items-center gap-4 group cursor-pointer no-underline">
                 <div class="logo-box w-11 h-11 bg-orange-500 rounded-2xl flex items-center justify-center shadow-lg shadow-orange-500/30 transition-all duration-700">
                     <i data-lucide="utensils-crossed" class="w-6 h-6 text-white -rotate-12 group-hover:rotate-0 transition-transform"></i>
                 </div>
@@ -188,13 +188,13 @@
             </div>
 
             <div class="hidden md:flex space-x-8 items-center font-bold text-[11px] tracking-widest text-gray-500">
-                <a href="/" class="nav-link flex items-center gap-2 hover:text-orange-600 transition-colors uppercase">
+                <a href="/UserHome" class="nav-link flex items-center gap-2 hover:text-orange-600 transition-colors uppercase">
                     <i data-lucide="home" class="w-4 h-4 text-orange-500"></i> Accueil
-                    <span class="active-dot"></span>
+                    @if(request()->is('UserHome')) <span class="active-dot ml-auto"></span> @endif
                 </a>
-                <a href="/community" class="nav-link flex items-center gap-2 hover:text-orange-600 transition-colors uppercase">
+                <a href="/UserCommunity" class="nav-link flex items-center gap-2 hover:text-orange-600 transition-colors uppercase">
                     <i data-lucide="users" class="w-4 h-4 text-orange-500"></i> Communauté
-                     @if(request()->is('community')) <span class="active-dot"></span> @endif
+                     @if(request()->is('UserCommunity')) <span class="active-dot ml-auto"></span> @endif
                 </a>
                 <a href="/mes-recettes" class="nav-link flex items-center gap-2 hover:text-orange-600 transition-colors uppercase">
                     <i data-lucide="chef-hat" class="w-4 h-4 text-orange-500"></i> Mes Recettes
@@ -267,13 +267,13 @@
 </div>
 
         <div class="flex flex-col gap-1">
-            <a href="/" class="stagger-item mobile-link flex items-center gap-4 px-5 py-4 text-sm font-bold text-gray-800 uppercase tracking-tight">
+            <a href="/UserHome" class="stagger-item mobile-link flex items-center gap-4 px-5 py-4 text-sm font-bold text-gray-800 uppercase tracking-tight">
                 <i data-lucide="home" class="w-5 h-5 text-orange-500"></i> Accueil
-                <span class="active-dot ml-auto"></span>
+                @if(request()->is('UserHome')) <span class="active-dot ml-auto"></span> @endif
             </a>
-            <a href="/community" class="stagger-item mobile-link flex items-center gap-4 px-5 py-4 text-sm font-bold text-gray-800 uppercase tracking-tight">
+            <a href="/UserCommunity" class="stagger-item mobile-link flex items-center gap-4 px-5 py-4 text-sm font-bold text-gray-800 uppercase tracking-tight">
                 <i data-lucide="users" class="w-5 h-5 text-orange-500"></i> Communauté
-                @if(request()->is('community')) <span class="active-dot ml-auto"></span> @endif
+                @if(request()->is('UserCommunity')) <span class="active-dot ml-auto"></span> @endif
             </a>
             <a href="/mes-recettes" class="stagger-item mobile-link flex items-center gap-4 px-5 py-4 text-sm font-bold text-gray-800 uppercase tracking-tight">
                 <i data-lucide="chef-hat" class="w-5 h-5 text-orange-500"></i> Mes Recettes

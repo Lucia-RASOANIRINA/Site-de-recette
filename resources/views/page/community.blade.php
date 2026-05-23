@@ -308,6 +308,18 @@
         background: radial-gradient(circle at top right, rgba(249, 115, 22, 0.05), transparent 70%);
         z-index: 0;
     }
+
+    @keyframes scaleX {
+        0% { transform: scaleX(0); }
+        100% { transform: scaleX(1); }
+    }
+    
+    .animation-delay-1000 {
+        animation-delay: 1s;
+    }
+    .animation-delay-2000 {
+        animation-delay: 2s;
+    }
 </style>
 
 <script defer src="https://unpkg.com/alpinejs@3.x.x/dist/cdn.min.js"></script>
@@ -342,19 +354,16 @@
         
         <div class="px-8 pt-8 pb-6 text-center">
             <div class="relative mx-auto mb-6 w-20 h-20">
-    <div class="absolute inset-0 bg-orange-200 rounded-2xl rotate-45 animate-pulse"></div>
-    <div class="absolute inset-0 bg-orange-500 rounded-2xl rotate-12 flex items-center justify-center">
-        
-        <div x-show="selectedAction === 'like'" x-cloak>
-            <i data-lucide="heart" class="w-10 h-10 text-white animate-heart-beat" stroke-width="1.5"></i>
-        </div>
-
-        <div x-show="selectedAction === 'share'" x-cloak>
-            <i data-lucide="share-2" class="w-10 h-10 text-white" stroke-width="1.5"></i>
-        </div>
-        
-    </div>
-</div>
+                <div class="absolute inset-0 bg-orange-200 rounded-2xl rotate-45 animate-pulse"></div>
+                <div class="absolute inset-0 bg-orange-500 rounded-2xl rotate-12 flex items-center justify-center">
+                    <div x-show="selectedAction === 'like'" x-cloak>
+                        <i data-lucide="heart" class="w-10 h-10 text-white animate-heart-beat" stroke-width="1.5"></i>
+                    </div>
+                    <div x-show="selectedAction === 'share'" x-cloak>
+                        <i data-lucide="share-2" class="w-10 h-10 text-white" stroke-width="1.5"></i>
+                    </div>
+                </div>
+            </div>
             
             <h3 class="text-2xl font-bold text-gray-900 mb-2">
                 <span x-text="selectedAction === 'like' ? 'Un like qui compte' : 'Partagez avec vos amis'"></span>
@@ -382,12 +391,9 @@
                 </span>
             </a>
             
-            {{-- BOUTON CONTINUER SANS REJOINDRE AMÉLIORÉ --}}
             <button @click="showLoginModal = false" 
                     class="w-full py-4 text-sm font-medium text-gray-400 hover:text-orange-500 hover:text-base transition-all duration-300 ease-in-out group">
-                <span class="relative inline-block">
-                    Continuer sans rejoindre
-                </span>
+                <span class="relative inline-block">Continuer sans rejoindre</span>
             </button>
         </div>
         
@@ -400,7 +406,7 @@
     </div>
 </div>
 
-   {{-- MODALE SPÉCIALE COMMENTAIRES (uniquement couleurs orange) --}}
+   {{-- MODALE COMMENTAIRES --}}
 <div x-show="showCommentModal" 
      x-cloak
      @keydown.escape.window="showCommentModal = false"
@@ -419,7 +425,6 @@
         
         <div class="px-8 pt-8 pb-6 text-center">
             <div class="relative mx-auto mb-6 w-24 h-24">
-                <!-- Cercles concentriques décoratifs en orange -->
                 <div class="absolute inset-0 bg-orange-100 rounded-full animate-pulse"></div>
                 <div class="absolute inset-2 bg-orange-200 rounded-full animate-pulse" style="animation-delay: 0.2s"></div>
                 <div class="absolute inset-4 bg-white rounded-full flex items-center justify-center z-10 shadow-inner">
@@ -431,153 +436,78 @@
             </div>
             
             <h3 class="text-2xl font-bold text-gray-900 mb-2">Rejoignez la conversation !</h3>
-            <p class="text-gray-500 mb-4">
-                {{ $totalComments }} commentaires et astuces partagés
-            </p>
+            <p class="text-gray-500 mb-4">{{ $totalComments }} commentaires partagés</p>
         </div>
         
         <div class="px-8 pb-8 space-y-3">
-            <a href="{{ route('login') }}#login" 
-               class="group relative block w-full py-4 bg-orange-500 text-white font-bold rounded-xl overflow-hidden transition-all hover:shadow-xl hover:shadow-orange-500/25 hover:-translate-y-1 wave-effect">
-                <span class="relative z-10 flex items-center justify-center gap-2">
-                    <i data-lucide="log-in" class="w-5 h-5 group-hover:rotate-12 transition-transform"></i>
-                    Se connecter
-                </span>
-            </a>
-            
-            <a href="{{ route('login') }}#register" 
-               class="group relative block w-full py-4 bg-gray-100 text-gray-700 font-bold rounded-xl overflow-hidden transition-all hover:bg-gray-200 hover:-translate-y-1 wave-effect">
-                <span class="relative z-10 flex items-center justify-center gap-2">
-                    <i data-lucide="user-plus" class="w-5 h-5 text-orange-500 group-hover:scale-110 transition-transform"></i>
-                    Créer un compte
-                </span>
-            </a>
-            
-            {{-- NOUVEAU STYLE POUR CONTINUER SANS REJOINDRE --}}
-            <button @click="showCommentModal = false" 
-                    class="w-full py-3 text-sm text-gray-400 hover:text-orange-500 transition-all duration-300 flex items-center justify-center gap-2 group">
-                <span class="relative">
-                    Continuer sans rejoindre
-                </span>
-                <i data-lucide="arrow-right" class="w-4 h-4 opacity-0 -translate-x-2 group-hover:opacity-100 group-hover:translate-x-0 transition-all duration-300"></i>
-            </button>
-        </div>
-        
-        <div class="px-8 py-4 bg-gray-50 border-t border-gray-100">
-            <p class="text-xs text-gray-400 text-center flex items-center justify-center gap-2">
-                <i data-lucide="message-circle" class="w-4 h-4 text-orange-400"></i>
-                {{ $totalComments }} commentaires + {{ $totalMembres }} membres dans la famille
-            </p>
+            <a href="{{ route('login') }}#login" class="w-full py-4 bg-orange-500 text-white font-bold rounded-xl block text-center">Se connecter</a>
+            <a href="{{ route('login') }}#register" class="w-full py-4 bg-gray-100 text-gray-700 font-bold rounded-xl block text-center">Créer un compte</a>
+            <button @click="showCommentModal = false" class="w-full py-3 text-sm text-gray-400 hover:text-orange-500">Continuer sans rejoindre</button>
         </div>
     </div>
 </div>
 
-    {{-- HERO SECTION AVEC STATS RÉELLES --}}
+    {{-- HERO SECTION --}}
 <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-12 pb-6">
     <div class="relative">
-        {{-- Éléments décoratifs améliorés --}}
         <div class="absolute -top-10 -left-10 w-40 h-40 bg-orange-200/20 rounded-full blur-3xl animate-pulse"></div>
         <div class="absolute -bottom-10 -right-10 w-40 h-40 bg-orange-300/20 rounded-full blur-3xl animate-pulse animation-delay-1000"></div>
-        <div class="absolute top-20 left-1/4 w-20 h-20 bg-orange-400/10 rounded-full blur-2xl animate-pulse animation-delay-2000"></div>
         
-        {{-- TITRE ET STATS EN LIGNE --}}
         <div class="relative flex flex-col lg:flex-row lg:items-end justify-between gap-8">
-            {{-- TITRE GAUCHE AVEC TAILLE RÉDUITE --}}
             <div class="animate-float-in max-w-2xl">
                 <div class="flex items-center gap-3 mb-4">
-                    {{-- Badge communautaire avec animation --}}
                     <div class="relative group/badge">
-                        <div class="absolute inset-0 bg-orange-500 rounded-2xl blur-md opacity-30 group-hover/badge:opacity-60 transition-opacity duration-700"></div>
-                        <div class="relative bg-gradient-to-br from-orange-500 to-orange-600 p-2.5 rounded-2xl shadow-lg transform group-hover/badge:scale-110 group-hover/badge:rotate-3 transition-all duration-500">
+                        <div class="absolute inset-0 bg-orange-500 rounded-2xl blur-md opacity-30"></div>
+                        <div class="relative bg-gradient-to-br from-orange-500 to-orange-600 p-2.5 rounded-2xl shadow-lg">
                             <i data-lucide="users" class="w-5 h-5 text-white"></i>
                         </div>
                     </div>
-                    
                     <div class="flex items-center gap-2">
                         <h1 class="text-4xl md:text-5xl lg:text-6xl font-black text-gray-900 tracking-tight">
-                            Le Fil 
-                            <span class="text-orange-500 relative inline-block">
-                                des Gourmets
-                                <span class="absolute -bottom-1.5 left-0 w-full h-1 bg-orange-500/30 rounded-full transform scale-x-0 group-hover/title:scale-x-100 transition-transform duration-700 origin-left"></span>
-                            </span>
+                            Le Fil <span class="text-orange-500">des Gourmets</span>
                         </h1>
-                        <div class="relative group/hat">
-                            <div class="w-12 h-12 bg-orange-100 rounded-2xl flex items-center justify-center animate-bounce shadow-inner group-hover/hat:shadow-xl group-hover/hat:shadow-orange-500/30 transition-all duration-500">
-                                <i data-lucide="chef-hat" class="w-6 h-6 text-orange-600 group-hover/hat:rotate-12 transition-transform duration-500"></i>
-                            </div>
-                            <div class="absolute -inset-1 bg-orange-500/20 rounded-3xl blur-xl opacity-0 group-hover/hat:opacity-100 transition-opacity duration-700"></div>
+                        <div class="w-12 h-12 bg-orange-100 rounded-2xl flex items-center justify-center animate-bounce">
+                            <i data-lucide="chef-hat" class="w-6 h-6 text-orange-600"></i>
                         </div>
                     </div>
                 </div>
                 
-                {{-- DESCRIPTION AVEC CADRE ÉLÉGANT --}}
-                <div class="relative pl-6 border-l-4 border-orange-500/30 bg-gradient-to-r from-orange-50/50 to-transparent p-4 rounded-r-2xl hover:from-orange-100/50 transition-all duration-500 hover:shadow-lg group/desc">
-                    <div class="absolute -inset-0.5 bg-orange-500/10 rounded-r-2xl blur opacity-0 group-hover/desc:opacity-100 transition-opacity duration-700"></div>
-                    <p class="text-gray-600 text-base md:text-lg leading-relaxed flex items-center gap-3 relative z-10">
-                        <i data-lucide="sparkles" class="w-5 h-5 text-orange-500 flex-shrink-0 group-hover/desc:rotate-12 transition-transform duration-500"></i>
-                        <span>
-                            Le point de rencontre des Cœurs Gourmands. Faites vibrer vos papilles au rythme des échanges savoureux et des défis de notre grande famille.
-                        </span>
+                <div class="relative pl-6 border-l-4 border-orange-500/30 bg-gradient-to-r from-orange-50/50 to-transparent p-4 rounded-r-2xl">
+                    <p class="text-gray-600 text-base md:text-lg leading-relaxed flex items-center gap-3">
+                        <i data-lucide="sparkles" class="w-5 h-5 text-orange-500"></i>
+                        <span>Le point de rencontre des Cœurs Gourmands. Échangez, partagez et inspirez-vous !</span>
                     </p>
                 </div>
             </div>
             
-            {{-- STATS CARTES AMÉLIORÉES AVEC POURCENTAGES --}}
             <div class="flex flex-wrap items-center gap-4 animate-float-in" style="animation-delay: 0.1s">
-                {{-- Carte Publications --}}
-                <div class="group/stat relative bg-white/80 backdrop-blur-sm px-5 py-3 rounded-2xl shadow-lg border border-gray-100 hover:border-orange-500 transition-all duration-500 hover:-translate-y-2 hover:shadow-2xl hover:shadow-orange-500/20 min-w-[120px] overflow-hidden">
-                    <div class="absolute inset-0 bg-gradient-to-r from-orange-500/0 via-orange-500/10 to-orange-500/0 translate-x-[-100%] group-hover/stat:translate-x-[100%] transition-transform duration-1000"></div>
-                    <div class="absolute inset-0 bg-orange-500/5 opacity-0 group-hover/stat:opacity-100 transition-opacity duration-500"></div>
+                <div class="group/stat relative bg-white/80 backdrop-blur-sm px-5 py-3 rounded-2xl shadow-lg border border-gray-100 hover:border-orange-500 transition-all hover:-translate-y-2">
                     <div class="relative text-center">
                         <div class="flex items-center justify-center gap-1 mb-1">
-                            <div class="p-1 bg-orange-100 rounded-lg group-hover/stat:bg-orange-200 transition-colors duration-500">
-                                <i data-lucide="file-text" class="w-4 h-4 text-orange-500 group-hover/stat:scale-110 transition-transform duration-500"></i>
-                            </div>
-                            <span class="text-[12px] font-medium text-gray-400 uppercase tracking-wider">Publications</span>
+                            <i data-lucide="file-text" class="w-4 h-4 text-orange-500"></i>
+                            <span class="text-[12px] font-medium text-gray-400">Publications</span>
                         </div>
-                        <span class="block text-3xl font-black text-gray-900 group-hover/stat:text-orange-500 transition-colors duration-500">{{ $totalPosts }}</span>
-                        <div class="flex items-center justify-center gap-1 mt-0.5">
-                            <span class="text-[12px] text-orange-500 font-bold">Créations</span>
-                            <span class="text-[12px] text-gray-400">Partagées</span>
-                        </div>
+                        <span class="block text-3xl font-black text-gray-900">{{ $totalPosts }}</span>
                     </div>
                 </div>
                 
-                {{-- Carte Passionnés --}}
-                <div class="group/stat relative bg-white/80 backdrop-blur-sm px-5 py-3 rounded-2xl shadow-lg border border-gray-100 hover:border-orange-500 transition-all duration-500 hover:-translate-y-2 hover:shadow-2xl hover:shadow-orange-500/20 min-w-[120px] overflow-hidden">
-                    <div class="absolute inset-0 bg-gradient-to-r from-orange-500/0 via-orange-500/10 to-orange-500/0 translate-x-[-100%] group-hover/stat:translate-x-[100%] transition-transform duration-1000"></div>
-                    <div class="absolute inset-0 bg-orange-500/5 opacity-0 group-hover/stat:opacity-100 transition-opacity duration-500"></div>
+                <div class="group/stat relative bg-white/80 backdrop-blur-sm px-5 py-3 rounded-2xl shadow-lg border border-gray-100 hover:border-orange-500 transition-all hover:-translate-y-2">
                     <div class="relative text-center">
                         <div class="flex items-center justify-center gap-1 mb-1">
-                            <div class="p-1 bg-orange-100 rounded-lg group-hover/stat:bg-orange-200 transition-colors duration-500">
-                                <i data-lucide="users" class="w-4 h-4 text-orange-500 group-hover/stat:scale-110 transition-transform duration-500"></i>
-                            </div>
-                            <span class="text-[12px] font-medium text-gray-400 uppercase tracking-wider">Passionnés</span>
+                            <i data-lucide="users" class="w-4 h-4 text-orange-500"></i>
+                            <span class="text-[12px] font-medium text-gray-400">Passionnés</span>
                         </div>
-                        <span class="block text-3xl font-black text-gray-900 group-hover/stat:text-orange-500 transition-colors duration-500">{{ $totalMembres }}</span>
-                        <div class="flex items-center justify-center gap-1 mt-0.5">
-                            <span class="text-[12px] text-orange-500 font-bold">L'Âme </span>
-                            <span class="text-[12px] text-gray-400">Culinaire</span>
-                        </div>
+                        <span class="block text-3xl font-black text-gray-900">{{ $totalMembres }}</span>
                     </div>
                 </div>
                 
-                {{-- Carte Commentaires --}}
-                <div class="group/stat relative bg-white/80 backdrop-blur-sm px-5 py-3 rounded-2xl shadow-lg border border-gray-100 hover:border-orange-500 transition-all duration-500 hover:-translate-y-2 hover:shadow-2xl hover:shadow-orange-500/20 min-w-[120px] overflow-hidden">
-                    <div class="absolute inset-0 bg-gradient-to-r from-orange-500/0 via-orange-500/10 to-orange-500/0 translate-x-[-100%] group-hover/stat:translate-x-[100%] transition-transform duration-1000"></div>
-                    <div class="absolute inset-0 bg-orange-500/5 opacity-0 group-hover/stat:opacity-100 transition-opacity duration-500"></div>
+                <div class="group/stat relative bg-white/80 backdrop-blur-sm px-5 py-3 rounded-2xl shadow-lg border border-gray-100 hover:border-orange-500 transition-all hover:-translate-y-2">
                     <div class="relative text-center">
                         <div class="flex items-center justify-center gap-1 mb-1">
-                            <div class="p-1 bg-orange-100 rounded-lg group-hover/stat:bg-orange-200 transition-colors duration-500">
-                                <i data-lucide="message-circle" class="w-4 h-4 text-orange-500 group-hover/stat:scale-110 transition-transform duration-500"></i>
-                            </div>
-                            <span class="text-[12px] font-medium text-gray-400 uppercase tracking-wider">Commentaires</span>
+                            <i data-lucide="message-circle" class="w-4 h-4 text-orange-500"></i>
+                            <span class="text-[12px] font-medium text-gray-400">Commentaires</span>
                         </div>
-                        <span class="block text-3xl font-black text-gray-900 group-hover/stat:text-orange-500 transition-colors duration-500">{{ $totalComments }}</span>
-                        <div class="flex items-center justify-center gap-1 mt-0.5">
-                            <span class="text-[12px] text-orange-500 font-bold">Échanges </span>
-                            <span class="text-[12px] text-gray-400">Savoureux</span>
-                        </div>
+                        <span class="block text-3xl font-black text-gray-900">{{ $totalComments }}</span>
                     </div>
                 </div>
             </div>
@@ -585,94 +515,17 @@
     </div>
 </div>
 
-{{-- FILTRES UNIQUEMENT --}}
+{{-- FILTRES --}}
 <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mt-8 mb-8">
-    <div class="relative">
-        {{-- Ligne décorative animée --}}
-        <div class="absolute left-0 right-0 h-px bg-gradient-to-r from-transparent via-orange-500/30 to-transparent transform scale-x-0 animate-[scaleX_1s_ease-in-out_forwards]"></div>
-        
-        <div class="flex justify-center pt-6">
-            {{-- BOUTONS FILTRES --}}
-            <div class="flex flex-wrap gap-5 justify-center">
-                <button @click="activeFilter = 'all'" 
-                        :class="activeFilter === 'all' ? 'bg-orange-500 text-white shadow-lg shadow-orange-500/30 scale-105' : 'bg-white text-gray-600 border border-gray-200 hover:border-orange-500 hover:text-orange-500'"
-                        class="px-6 py-3 rounded-full text-sm font-bold transition-all duration-300 flex items-center gap-2 hover:scale-110 hover:shadow-xl active:scale-95">
-                    <i data-lucide="layout-grid" class="w-4 h-4"></i> Tous
-                </button>
-                <button @click="activeFilter = 'realisation'" 
-                        :class="activeFilter === 'realisation' ? 'bg-green-500 text-white shadow-lg shadow-green-500/30 scale-105' : 'bg-white text-gray-600 border border-gray-200 hover:border-green-500 hover:text-green-500'"
-                        class="px-6 py-3 rounded-full text-sm font-bold transition-all duration-300 flex items-center gap-2 hover:scale-110 hover:shadow-xl active:scale-95">
-                    <i data-lucide="cooking-pot" class="w-4 h-4"></i> Réalisations
-                </button>
-                <button @click="activeFilter = 'question'" 
-                        :class="activeFilter === 'question' ? 'bg-blue-500 text-white shadow-lg shadow-blue-500/30 scale-105' : 'bg-white text-gray-600 border border-gray-200 hover:border-blue-500 hover:text-blue-500'"
-                        class="px-6 py-3 rounded-full text-sm font-bold transition-all duration-300 flex items-center gap-2 hover:scale-110 hover:shadow-xl active:scale-95">
-                    <i data-lucide="search-code" class="w-4 h-4"></i> Questions
-                </button>
-                <button @click="activeFilter = 'defi'" 
-                        :class="activeFilter === 'defi' ? 'bg-purple-500 text-white shadow-lg shadow-purple-500/30 scale-105' : 'bg-white text-gray-600 border border-gray-200 hover:border-purple-500 hover:text-purple-500'"
-                        class="px-6 py-3 rounded-full text-sm font-bold transition-all duration-300 flex items-center gap-2 hover:scale-110 hover:shadow-xl active:scale-95">
-                    <i data-lucide="trophy" class="w-4 h-4"></i> Défis
-                </button>
-            </div>
+    <div class="flex justify-center">
+        <div class="flex flex-wrap gap-5 justify-center">
+            <button @click="activeFilter = 'all'" :class="activeFilter === 'all' ? 'bg-orange-500 text-white shadow-lg' : 'bg-white text-gray-600 border border-gray-200 hover:border-orange-500'" class="px-6 py-3 rounded-full text-sm font-bold transition-all">Tous</button>
+            <button @click="activeFilter = 'realisation'" :class="activeFilter === 'realisation' ? 'bg-green-500 text-white shadow-lg' : 'bg-white text-gray-600 border border-gray-200 hover:border-green-500'" class="px-6 py-3 rounded-full text-sm font-bold transition-all">Réalisations</button>
+            <button @click="activeFilter = 'question'" :class="activeFilter === 'question' ? 'bg-blue-500 text-white shadow-lg' : 'bg-white text-gray-600 border border-gray-200 hover:border-blue-500'" class="px-6 py-3 rounded-full text-sm font-bold transition-all">Questions</button>
+            <button @click="activeFilter = 'defi'" :class="activeFilter === 'defi' ? 'bg-purple-500 text-white shadow-lg' : 'bg-white text-gray-600 border border-gray-200 hover:border-purple-500'" class="px-6 py-3 rounded-full text-sm font-bold transition-all">Défis</button>
         </div>
     </div>
 </div>
-
-{{-- Ajouter ces styles supplémentaires --}}
-<style>
-    @keyframes scaleX {
-        0% { transform: scaleX(0); }
-        100% { transform: scaleX(1); }
-    }
-    
-    @keyframes float {
-        0%, 100% { transform: translateY(0); }
-        50% { transform: translateY(-5px); }
-    }
-    
-    @keyframes shimmer {
-        0% { background-position: -1000px 0; }
-        100% { background-position: 1000px 0; }
-    }
-    
-    .animate-float {
-        animation: float 3s ease-in-out infinite;
-    }
-    
-    .shimmer-effect {
-        background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
-        background-size: 1000px 100%;
-        animation: shimmer 3s infinite;
-    }
-    
-    .stat-card {
-        background: linear-gradient(135deg, rgba(255,255,255,0.9) 0%, rgba(255,255,255,0.8) 100%);
-        backdrop-filter: blur(10px);
-        transition: all 0.3s ease;
-    }
-    .stat-card:hover {
-        transform: translateY(-4px);
-        box-shadow: 0 20px 30px -10px rgba(249, 115, 22, 0.2);
-    }
-    
-    .filter-btn {
-        transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
-    }
-    .filter-btn:hover:not(.active) {
-        transform: translateY(-2px);
-    }
-    .filter-btn.active {
-        transform: scale(1.05);
-    }
-    
-    .animation-delay-1000 {
-        animation-delay: 1s;
-    }
-    .animation-delay-2000 {
-        animation-delay: 2s;
-    }
-</style>
 
     {{-- GRILLE DE POSTS --}}
     <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 space-y-6">
@@ -699,11 +552,10 @@
                  style="transition: width 0.6s ease"></div>
             
             <div class="p-6 md:p-8">
-                {{-- EN-TÊTE UTILISATEUR AVEC ICÔNES --}}
+                {{-- EN-TÊTE UTILISATEUR --}}
                 <div class="flex items-center justify-between mb-6">
                     <div class="flex items-center gap-4 group/user">
                         <div class="relative">
-                            <div class="absolute inset-0 bg-orange-500 rounded-2xl blur-lg opacity-0 group-hover/user:opacity-30 transition-opacity"></div>
                             <div class="relative w-14 h-14 bg-gradient-to-br from-orange-500 to-yellow-500 rounded-2xl flex items-center justify-center text-white font-bold text-xl shadow-lg">
                                 {{ strtoupper(substr($post->user->name, 0, 1)) }}
                             </div>
@@ -717,10 +569,6 @@
                                 <div class="flex items-center gap-1">
                                     <i data-lucide="clock" class="w-3 h-3"></i>
                                     <span>{{ $post->created_at->diffForHumans() }}</span>
-                                </div>
-                                <div class="flex items-center gap-1">
-                                    <i data-lucide="award" class="w-3 h-3"></i>
-                                    <span>Artisan Gourmet</span>
                                 </div>
                             </div>
                         </div>
@@ -741,50 +589,42 @@
                     </span>
                 </div>
 
-                {{-- CONTENU AVEC ICÔNE --}}
+                {{-- CONTENU --}}
                 <div class="mb-6 flex gap-3">
                     <i data-lucide="message-square" class="w-5 h-5 text-orange-400 flex-shrink-0 mt-1"></i>
                     <p class="text-gray-700 text-lg leading-relaxed">{{ $post->content }}</p>
                 </div>
 
-                {{-- IMAGE AVEC CADRE ÉLÉGANT (plus petite) --}}
+                {{-- IMAGE --}}
                 @if($post->image_path)
                 <div class="mb-6 flex justify-center">
                     <div class="image-container group/image">
                         <div class="image-backdrop"></div>
                         <div class="image-backdrop second"></div>
                         <div class="image-frame"></div>
-                        <img src="{{ asset('storage/'.$post->image_path) }}" 
-                             class="image-main"
-                             alt="Post image">
+                        <img src="{{ asset('storage/'.$post->image_path) }}" class="image-main" alt="Post image">
                     </div>
                 </div>
                 @endif
 
                 {{-- BARRE D'INTERACTIONS --}}
                 <div class="flex items-center gap-3 pt-4 border-t border-gray-100">
-                    {{-- BOUTON LIKE --}}
-                    <button @click="showLoginModal = true; selectedAction = 'like'" 
-                            class="interaction-btn flex items-center gap-2 px-4 py-2 rounded-xl transition-all">
+                    <button @click="showLoginModal = true; selectedAction = 'like'" class="interaction-btn flex items-center gap-2 px-4 py-2 rounded-xl transition-all">
                         <i data-lucide="heart" class="w-4 h-4"></i>
                         <span class="font-bold text-sm" x-text="likesCount"></span>
                     </button>
 
-                    {{-- BOUTON COMMENTAIRE --}}
-                    <button @click="showCommentModal = true" 
-                            class="interaction-btn flex items-center gap-2 px-4 py-2 rounded-xl transition-all">
+                    <button @click="showCommentModal = true" class="interaction-btn flex items-center gap-2 px-4 py-2 rounded-xl transition-all">
                         <i data-lucide="message-circle" class="w-4 h-4"></i>
                         <span class="font-bold text-sm">{{ $postCommentsCount }}</span>
                     </button>
 
-                    {{-- BOUTON PARTAGE --}}
-                    <button @click="showLoginModal = true; selectedAction = 'share'" 
-                            class="interaction-btn flex items-center gap-2 px-4 py-2 rounded-xl transition-all ml-auto">
+                    <button @click="showLoginModal = true; selectedAction = 'share'" class="interaction-btn flex items-center gap-2 px-4 py-2 rounded-xl transition-all ml-auto">
                         <i data-lucide="share-2" class="w-4 h-4"></i>
                     </button>
                 </div>
 
-                {{-- DERNIER COMMENTAIRE (toujours visible) --}}
+                {{-- DERNIER COMMENTAIRE --}}
                 @if($lastComment)
                 <div class="mt-4 last-comment-card p-3">
                     <div class="flex items-start gap-3">
@@ -794,22 +634,9 @@
                         <div class="flex-1">
                             <div class="flex items-center gap-2 mb-1">
                                 <span class="text-xs font-bold text-gray-700">{{ $lastComment->user->name }}</span>
-                                <span class="text-[10px] text-gray-400 flex items-center gap-1">
-                                    <i data-lucide="clock" class="w-3 h-3"></i>
-                                    {{ $lastComment->created_at->diffForHumans() }}
-                                </span>
-                                @if(isset($lastComment->astuce) && $lastComment->astuce)
-                                    <span class="px-2 py-0.5 bg-orange-100 text-orange-600 text-[10px] rounded-full flex items-center gap-1">
-                                        <i data-lucide="sparkles" class="w-3 h-3"></i>
-                                        Astuce
-                                    </span>
-                                @endif
+                                <span class="text-[10px] text-gray-400">{{ $lastComment->created_at->diffForHumans() }}</span>
                             </div>
                             <p class="text-sm text-gray-600">{{ $lastComment->content }}</p>
-                            <div class="flex items-center gap-1 mt-1 text-[10px] text-gray-400">
-                                <i data-lucide="message-circle" class="w-3 h-3"></i>
-                                <span>Dernier commentaire</span>
-                            </div>
                         </div>
                     </div>
                 </div>
@@ -817,7 +644,7 @@
             </div>
         </div>
         @empty
-        <div class="text-center py-20 bg-white rounded-3xl border-2 border-dashed border-gray-200 animate-float-in">
+        <div class="text-center py-20 bg-white rounded-3xl border-2 border-dashed border-gray-200">
             <div class="w-20 h-20 bg-gray-100 rounded-3xl flex items-center justify-center mx-auto mb-6">
                 <i data-lucide="utensils" class="w-10 h-10 text-gray-400"></i>
             </div>
@@ -831,9 +658,8 @@
 <script src="https://unpkg.com/lucide@latest"></script>
 <script>
     lucide.createIcons();
-
     document.addEventListener('alpine:initialized', () => {
-    lucide.createIcons();
-});
+        lucide.createIcons();
+    });
 </script>
 @endsection

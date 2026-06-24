@@ -19,10 +19,11 @@ class RecetteController extends Controller
             $recettes = Recette::with(['ingredients', 'user', 'likes'])
                 ->orderBy('created_at', 'desc')
                 ->get();
-            return view('home', compact('recettes'));
+            $search = SearchController::query(request('q'));
+            return view('home', compact('recettes', 'search'));
         } catch (\Exception $e) {
             Log::error('Erreur index: ' . $e->getMessage());
-            return view('home', ['recettes' => collect()])->with('error', 'Erreur de chargement des recettes');
+            return view('home', ['recettes' => collect(), 'search' => SearchController::query(null)])->with('error', 'Erreur de chargement des recettes');
         }
     }
 
@@ -37,11 +38,26 @@ class RecetteController extends Controller
                 ->orderBy('created_at', 'desc')
                 ->get();
 
-            return view('page.UserHome', compact('recettes'));
+            $search = SearchController::query(request('q'));
+            return view('page.UserHome', compact('recettes', 'search'));
         } catch (\Exception $e) {
             Log::error('Erreur userIndex: ' . $e->getMessage());
             return back()->with('error', 'Erreur de chargement des recettes');
         }
+    }
+
+    /**
+     * Page de détail d'une recette (avec ingrédients).
+     */
+    public function showPage($id)
+    {
+        $recette = Recette::with(['ingredients', 'user'])->withCount('likes')->findOrFail($id);
+        $isLiked = Auth::check() ? $recette->likes()->where('user_id', Auth::id())->exists() : false;
+        $autres = Recette::with('user')->withCount('likes')
+            ->where('id', '!=', $recette->id)
+            ->latest()->limit(4)->get();
+
+        return view('page.recette-detail', compact('recette', 'isLiked', 'autres'));
     }
 
     /**

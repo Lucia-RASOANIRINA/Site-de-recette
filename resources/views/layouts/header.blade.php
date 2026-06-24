@@ -38,11 +38,9 @@
     </style>
 </head>
 <body class="bg-[#fcfaf8] font-sans" 
-      x-data="{ 
-        mobileMenuOpen: false, 
-        searchOpen: false, 
-        searchQuery: '',
-        currentPath: window.location.pathname 
+      x-data="{
+        mobileMenuOpen: false,
+        currentPath: window.location.pathname
       }"
       x-init="$watch('mobileMenuOpen', value => { if(value && window.innerWidth > 768) mobileMenuOpen = false }); 
               window.addEventListener('resize', () => { if(window.innerWidth > 768) mobileMenuOpen = false })">
@@ -61,13 +59,11 @@
                     </span>
                 </div>
 
-                <div class="hidden md:flex flex-1 max-w-sm mx-10">
-                    <button @click="searchOpen = true; $nextTick(() => $refs.searchInput.focus())" 
-                            class="w-full bg-gray-100/60 hover:bg-white border border-transparent hover:border-orange-300 text-gray-400 rounded-2xl py-2.5 px-6 text-sm flex items-center gap-3 transition-all duration-300 group hover:shadow-lg hover:shadow-orange-100/50">
-                        <i data-lucide="search" class="w-4 h-4 group-hover:text-orange-500 group-hover:scale-110 transition-transform"></i>
-                        <span class="font-semibold group-hover:text-gray-600">Rechercher une pépite...</span>
-                    </button>
-                </div>
+                <form action="{{ route('recherche') }}" method="GET" class="hidden md:flex flex-1 max-w-sm mx-10 relative group">
+                    <i data-lucide="search" class="absolute left-5 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400 group-focus-within:text-orange-500 transition-colors"></i>
+                    <input type="text" name="q" value="{{ request('q') }}" placeholder="Rechercher une recette, un membre..."
+                           class="w-full bg-gray-100/60 focus:bg-white border border-transparent focus:border-orange-300 rounded-2xl py-2.5 pl-12 pr-4 text-sm outline-none focus:ring-2 focus:ring-orange-500/20 transition-all">
+                </form>
 
                 <div class="hidden md:flex space-x-10 items-center font-bold text-[11px] tracking-[0.2em]">
                     <a href="/" 
@@ -76,10 +72,10 @@
                         <i data-lucide="utensils" class="lucide-icon w-4 h-4 transition-colors" :class="currentPath === '/' ? 'text-orange-500' : 'text-gray-400 group-hover:text-orange-400'"></i>
                         RECETTES
                     </a>
-                    <a href="/community" 
+                    <a href="/communaute"
                        class="relative py-2 flex items-center gap-2 nav-link group transition-colors hover:text-orange-500"
-                       :class="currentPath === '/community' ? 'text-orange-600 active' : 'text-gray-500'">
-                        <i data-lucide="users" class="lucide-icon w-4 h-4 transition-colors" :class="currentPath === '/community' ? 'text-orange-500' : 'text-gray-400 group-hover:text-orange-400'"></i>
+                       :class="currentPath === '/communaute' ? 'text-orange-600 active' : 'text-gray-500'">
+                        <i data-lucide="users" class="lucide-icon w-4 h-4 transition-colors" :class="currentPath === '/communaute' ? 'text-orange-500' : 'text-gray-400 group-hover:text-orange-400'"></i>
                         COMMUNAUTÉ
                     </a>
                     <a href="{{ route('login') }}" class="bg-orange-500 text-white px-8 py-3.5 rounded-full hover:bg-orange-600 hover:shadow-[0_10px_20px_-5px_rgba(249,115,22,0.4)] transition-all duration-300 scale-95 hover:scale-100 active:scale-90 uppercase text-[10px] tracking-widest font-black">
@@ -88,7 +84,7 @@
                 </div>
 
                 <div class="md:hidden flex items-center gap-3">
-                    <button @click="searchOpen = true" class="text-gray-500 p-2 hover:bg-orange-50 hover:text-orange-500 rounded-full transition-all">
+                    <button @click="mobileMenuOpen = true" class="text-gray-500 p-2 hover:bg-orange-50 hover:text-orange-500 rounded-full transition-all">
                         <i data-lucide="search" class="w-6 h-6"></i>
                     </button>
                     <button @click="mobileMenuOpen = true" class="text-gray-900 bg-white p-2.5 rounded-xl border border-gray-100 shadow-sm active:scale-90 transition-transform">
@@ -116,15 +112,21 @@
                         </button>
                     </div>
 
+                    <form action="{{ route('recherche') }}" method="GET" class="relative mb-6">
+                        <i data-lucide="search" class="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400"></i>
+                        <input type="text" name="q" value="{{ request('q') }}" placeholder="Rechercher..."
+                               class="w-full bg-gray-50 border border-gray-100 rounded-2xl py-3.5 pl-11 pr-4 text-sm outline-none focus:ring-2 focus:ring-orange-500/20">
+                    </form>
+
                     <div class="space-y-3 flex-grow">
                         <a href="/" class="group flex items-center gap-4 p-5 rounded-2xl transition-all"
                            :class="currentPath === '/' ? 'bg-orange-500 text-white shadow-lg shadow-orange-200' : 'bg-transparent text-gray-600 hover:bg-gray-50'">
                             <i data-lucide="utensils" class="w-6 h-6" :class="currentPath === '/' ? 'text-white' : 'text-orange-500'"></i>
                             <span class="font-black text-xs tracking-[0.2em]">RECETTES</span>
                         </a>
-                        <a href="/community" class="group flex items-center gap-4 p-5 rounded-2xl transition-all"
-                           :class="currentPath === '/community' ? 'bg-orange-500 text-white shadow-lg shadow-orange-200' : 'bg-transparent text-gray-600 hover:bg-gray-50'">
-                            <i data-lucide="users" class="w-6 h-6" :class="currentPath === '/community' ? 'text-white' : 'text-orange-500'"></i>
+                        <a href="/communaute" class="group flex items-center gap-4 p-5 rounded-2xl transition-all"
+                           :class="currentPath === '/communaute' ? 'bg-orange-500 text-white shadow-lg shadow-orange-200' : 'bg-transparent text-gray-600 hover:bg-gray-50'">
+                            <i data-lucide="users" class="w-6 h-6" :class="currentPath === '/communaute' ? 'text-white' : 'text-orange-500'"></i>
                             <span class="font-black text-xs tracking-[0.2em]">COMMUNAUTÉ</span>
                         </a>
                     </div>
@@ -148,6 +150,8 @@
     <main class="pt-24 px-4 min-h-screen">
         @yield('content')
     </main>
+
+    @include('partials.notifications')
 
     <script>
         document.addEventListener('alpine:init', () => { lucide.createIcons(); });

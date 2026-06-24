@@ -38,6 +38,12 @@ class Recette extends Model
         return $this->hasMany(Like::class);
     }
 
+    // Relation avec les votes publics (visiteurs anonymes - recette de la semaine)
+    public function votes(): HasMany
+    {
+        return $this->hasMany(RecipeVote::class);
+    }
+
     // Compter les likes
     public function likesCount()
     {

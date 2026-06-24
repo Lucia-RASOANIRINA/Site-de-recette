@@ -179,13 +179,13 @@
                 </div>
             </a>
 
-            <div class="hidden md:flex flex-1 max-w-xs mx-10 group">
+            <form action="{{ route('recherche') }}" method="GET" class="hidden md:flex flex-1 max-w-xs mx-10 group">
                 <div class="relative w-full">
                     <i data-lucide="search" class="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400 w-4 h-4 group-focus-within:text-orange-500 transition-colors"></i>
-                    <input type="text" placeholder="Rechercher..." 
+                    <input type="text" name="q" value="{{ request('q') }}" placeholder="Rechercher une recette, un membre..."
                            class="w-full bg-gray-100/60 border border-transparent rounded-[20px] py-2.5 pl-11 pr-4 text-sm focus:outline-none focus:ring-2 focus:ring-orange-500/20 focus:bg-white transition-all">
                 </div>
-            </div>
+            </form>
 
             <div class="hidden md:flex space-x-8 items-center font-bold text-[11px] tracking-widest text-gray-500">
                 <a href="/UserHome" class="nav-link flex items-center gap-2 hover:text-orange-600 transition-colors uppercase">
@@ -221,9 +221,14 @@
                         <a href="/profile" class="block px-4 py-2 text-sm text-gray-700 hover:bg-orange-50">
                             <i data-lucide="user" class="w-4 h-4 inline mr-2"></i> Mon profil
                         </a>
-                        <a href="/mes-recettes" class="flex items-center gap-3 px-5 py-3 text-sm font-bold text-gray-600 hover:bg-orange-50 hover:text-orange-600 transition-all">
+                        <a href="/profile#coup-de-coeur" class="flex items-center gap-3 px-5 py-3 text-sm font-bold text-gray-600 hover:bg-orange-50 hover:text-orange-600 transition-all">
                             <i data-lucide="heart" class="w-4 h-4"></i> Coups de cœur
                         </a>
+                        @if(Auth::check() && Auth::user()->isAdmin())
+                        <a href="/admin" class="flex items-center gap-3 px-5 py-3 text-sm font-bold text-orange-600 hover:bg-orange-50 transition-all">
+                            <i data-lucide="shield" class="w-4 h-4"></i> Administration
+                        </a>
+                        @endif
                         <hr class="my-2 border-gray-50 mx-4">
                         <button onclick="openLogoutModal()" class="flex items-center gap-3 px-5 py-3 text-sm font-bold text-gray-600 hover:bg-red-50 hover:text-red-500 transition-all w-full text-left ">
                             <i data-lucide="log-out" class="w-4 h-4"></i> Déconnexion
@@ -243,11 +248,11 @@
     </div>
 
     <div id="mobile-menu" class="hidden md:hidden bg-white border-t border-gray-50 px-6 py-8 space-y-6 shadow-2xl overflow-y-auto max-h-[90vh]">
-        <div class="stagger-item relative w-full px-2">
+        <form action="{{ route('recherche') }}" method="GET" class="stagger-item relative w-full px-2">
             <i data-lucide="search" class="absolute left-6 top-1/2 -translate-y-1/2 text-gray-400 w-4 h-4"></i>
-            <input type="text" placeholder="Rechercher une recette..." 
+            <input type="text" name="q" value="{{ request('q') }}" placeholder="Rechercher une recette..."
                    class="w-full bg-gray-50 border border-gray-100 rounded-2xl py-3.5 pl-11 pr-4 text-sm focus:outline-none focus:ring-2 focus:ring-orange-500/20 transition-all">
-        </div>
+        </form>
         <div class="stagger-item profile-group flex items-center gap-4 p-5 cursor-pointer">
     <div class="avatar-main w-12 h-12 rounded-full bg-white flex items-center justify-center shadow-sm text-orange-500 relative shrink-0">
         <i data-lucide="user-round" class="w-6 h-6"></i>
@@ -325,6 +330,10 @@
 <main class="pt-24 px-4 min-h-screen">
     @yield('content')
 </main>
+
+@include('layouts.UserFooter')
+
+@include('partials.notifications')
 
 <script>
     lucide.createIcons();

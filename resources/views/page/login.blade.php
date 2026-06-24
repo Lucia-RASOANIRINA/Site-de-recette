@@ -162,11 +162,16 @@ document.addEventListener('DOMContentLoaded', function() {
         }, 500);
     @endif
     
-    // Afficher le modal de bienvenue
+    // Afficher le modal de bienvenue (connexion réussie) puis rediriger
     @if(session('welcome_back'))
         setTimeout(function() {
             showModal('success', 'Bon retour à table !', '{{ session('welcome_back') }}', 'chef-hat');
-        }, 500);
+        }, 300);
+        @if(session('redirect_to'))
+        setTimeout(function() {
+            window.location.href = '{{ session('redirect_to') }}';
+        }, 2200);
+        @endif
     @endif
     
     // Afficher le modal d'email non vérifié

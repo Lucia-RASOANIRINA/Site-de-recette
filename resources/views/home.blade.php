@@ -2,6 +2,8 @@
 @extends('layouts.header')
 
 @section('content')
+@if(!empty($search) && $search['q'] !== '')<div class="pt-24"></div>@endif
+@include('partials.search-results')
 <style>
     [x-cloak] { display: none !important; }
 
@@ -113,8 +115,10 @@
                                 <i data-lucide="award" class="w-5 h-5 text-orange-400"></i>
                             </div>
 
-                            <img src="{{ asset('storage/' . $recette->image_path) }}" 
-                                class="w-48 h-64 md:w-64 md:h-80 object-cover rounded-[2.5rem] shadow-2xl border-[10px] border-white transition-all duration-300 group-hover:scale-[1.03] group-hover:border-orange-400">
+                            <a href="{{ route('recette.page', $recette->id) }}" title="Voir la recette « {{ $recette->titre }} »">
+                                <img src="{{ asset('storage/' . $recette->image_path) }}"
+                                    class="w-48 h-64 md:w-64 md:h-80 object-cover rounded-[2.5rem] shadow-2xl border-[10px] border-white transition-all duration-300 cursor-pointer group-hover:scale-[1.03] group-hover:border-orange-400">
+                            </a>
                         </div>
                     </div>
                 @endforeach
@@ -131,11 +135,11 @@
             @endphp
             <div class="group relative bg-white rounded-[40px] shadow-sm border border-gray-200 p-4 pt-0 transition-all duration-500 hover:shadow-xl hover:-translate-y-2">
                 <div class="relative -mt-12 mb-6 flex justify-center">
-                    <div class="relative w-48 h-48 rounded-full transition-transform duration-700 ease-out group-hover:scale-110 group-hover:rotate-6">
+                    <a href="{{ route('recette.page', $recette->id) }}" class="relative w-48 h-48 rounded-full transition-transform duration-700 ease-out group-hover:scale-110 group-hover:rotate-6" title="Voir la recette">
                         <div class="absolute inset-2 rounded-full bg-black/5 blur-xl group-hover:bg-black/20 transition-all duration-700"></div>
-                        <img src="{{ asset('storage/'.$recette->image_path) }}" 
-                            class="relative w-full h-full object-cover rounded-full border-[8px] border-white shadow-sm">
-                    </div>
+                        <img src="{{ asset('storage/'.$recette->image_path) }}"
+                            class="relative w-full h-full object-cover rounded-full border-[8px] border-white shadow-sm cursor-pointer">
+                    </a>
                     <div class="absolute top-8 right-0 bg-white shadow-lg px-2 py-1 rounded-full flex items-center gap-1 border border-gray-100">
                         <i data-lucide="star" class="w-3 h-3 text-yellow-400 fill-yellow-400"></i>
                         <span class="text-[10px] font-black">{{ number_format($rating, 1) }}</span>

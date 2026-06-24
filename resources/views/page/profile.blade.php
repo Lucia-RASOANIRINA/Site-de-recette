@@ -463,26 +463,38 @@
     .tab-btn.active { color: #f97316; border-bottom-color: #f97316; background: #fff7ed; border-radius: 12px 12px 0 0; }
     .tab-btn:hover:not(.active) { color: #f97316; background: #fff7ed; border-radius: 12px 12px 0 0; }
 
-    /* Informations */
+    /* Informations - style cartes (Instagram / culinaire) */
     .info-row {
         display: flex;
-        padding: 14px 0;
-        border-bottom: 1px solid #f3f4f6;
-        align-items: center;
+        flex-direction: column;
+        gap: 6px;
+        padding: 16px 18px;
+        border: 1px solid #f3f4f6;
+        border-radius: 18px;
+        background: #fff;
+        transition: all .25s ease;
     }
-    .info-row:last-child { border-bottom: none; }
+    .info-row:hover {
+        border-color: #fdba74;
+        box-shadow: 0 12px 28px -14px rgba(249,115,22,.35);
+        transform: translateY(-2px);
+    }
     .info-label {
-        width: 140px;
-        font-weight: 600;
-        color: #f97316;
+        font-weight: 800;
+        color: #9ca3af;
+        font-size: 11px;
+        text-transform: uppercase;
+        letter-spacing: .08em;
         display: flex;
         align-items: center;
         gap: 8px;
     }
+    .info-label svg { color: #f97316; }
     .info-value {
-        flex: 1;
-        color: #374151;
-        font-weight: 500;
+        color: #111827;
+        font-weight: 600;
+        font-size: 15px;
+        padding-left: 24px;
     }
 
     /* Champs édition */
@@ -533,6 +545,20 @@
         gap: 8px;
     }
     .btn-secondary:hover { background: #4b5563; transform: translateY(-2px); }
+
+    /* Modal Contacter */
+    .contact-modal-overlay {
+        position: fixed; inset: 0; z-index: 120;
+        background: rgba(17,24,39,.55); backdrop-filter: blur(6px);
+        display: none; align-items: center; justify-content: center; padding: 16px;
+    }
+    .contact-modal-overlay.active { display: flex; }
+    .contact-modal-box {
+        background: #fff; border-radius: 24px; padding: 24px;
+        width: 100%; max-width: 460px;
+        box-shadow: 0 25px 50px -12px rgba(0,0,0,.25);
+        animation: modalPop .3s ease forwards;
+    }
     .btn-outline {
         background: transparent;
         border: 1px solid #f97316;
@@ -900,7 +926,24 @@
         
         {{-- Carte de profil principale --}}
         <div class="bg-white rounded-2xl shadow-sm overflow-hidden mb-8 border border-gray-100">
-            <div class="bg-orange-500 h-24"></div>
+            <div class="relative h-44 md:h-56 bg-orange-500 overflow-hidden">
+                <img src="{{ asset('storage/recettes/salade.jpg') }}" class="absolute inset-0 w-full h-full object-cover opacity-40" alt="">
+                <div class="absolute inset-0 bg-gradient-to-r from-orange-600/90 via-orange-500/70 to-orange-500/40"></div>
+                <div class="absolute top-5 left-6 text-white">
+                    <p class="text-[10px] uppercase tracking-[0.4em] font-black opacity-80">OURATABLE</p>
+                    <p class="text-xl font-black italic tracking-tight">L'art de bien manger</p>
+                </div>
+                <div class="absolute bottom-4 right-6 text-white/95 text-right">
+                    <p class="text-sm font-semibold flex items-center gap-1 justify-end">
+                        <i data-lucide="map-pin" class="w-4 h-4"></i> {{ $user->city ?? 'Cuisine du monde' }}
+                    </p>
+                    @if($user->specialty)
+                    <p class="text-xs opacity-80 flex items-center gap-1 justify-end mt-0.5">
+                        <i data-lucide="chef-hat" class="w-3.5 h-3.5"></i> {{ $user->specialty }}
+                    </p>
+                    @endif
+                </div>
+            </div>
             <div class="relative px-6 pb-6">
                 <div class="flex flex-col md:flex-row items-center md:items-end gap-6 -mt-16">
                     <div class="avatar-container">
@@ -925,6 +968,11 @@
                     <div class="flex-1 text-center md:text-left">
                         <h1 class="text-2xl md:text-3xl font-bold text-gray-900">{{ $user->name }}</h1>
                         <p class="text-orange-600 text-sm mt-1">{{ $user->bio ?? 'Passionné(e) de cuisine' }}</p>
+                        <div class="flex flex-wrap items-center gap-4 mt-2 justify-center md:justify-start text-xs text-gray-500">
+                            <span class="inline-flex items-center gap-1"><i data-lucide="award" class="w-3.5 h-3.5 text-orange-500"></i> Niveau {{ $level ?? 1 }}</span>
+                            <span class="inline-flex items-center gap-1"><i data-lucide="calendar" class="w-3.5 h-3.5 text-orange-500"></i> Membre depuis {{ optional($user->created_at)->format('m/Y') }}</span>
+                            <span class="inline-flex items-center gap-1"><i data-lucide="heart" class="w-3.5 h-3.5 text-rose-500"></i> {{ $totalLikes ?? 0 }} coups de cœur</span>
+                        </div>
                         <div class="flex flex-wrap gap-2 mt-3 justify-center md:justify-start">
                             @foreach($badges as $badge)
                             <span class="badge-item" title="{{ $badge['description'] ?? '' }}">
@@ -952,8 +1000,41 @@
                             </svg>
                             Mot de passe
                         </button>
+                        <button onclick="document.getElementById('contactModal').classList.add('active')" class="btn-primary text-sm">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/>
+                                <polyline points="22,6 12,13 2,6"/>
+                            </svg>
+                            Contacter
+                        </button>
                     </div>
                 </div>
+            </div>
+        </div>
+
+        {{-- Modal Contacter --}}
+        <div id="contactModal" class="contact-modal-overlay" onclick="if(event.target === this) this.classList.remove('active')">
+            <div class="contact-modal-box">
+                <div class="flex items-center justify-between mb-4">
+                    <h3 class="text-lg font-bold text-gray-900 flex items-center gap-2">
+                        <span class="w-9 h-9 rounded-xl bg-orange-100 text-orange-600 flex items-center justify-center">
+                            <i data-lucide="mail" class="w-5 h-5"></i>
+                        </span>
+                        Contacter l'équipe
+                    </h3>
+                    <button onclick="document.getElementById('contactModal').classList.remove('active')" class="text-gray-400 hover:text-gray-600">
+                        <i data-lucide="x" class="w-5 h-5"></i>
+                    </button>
+                </div>
+                <p class="text-xs text-gray-500 mb-4">Votre message est envoyé à l'administration (messagerie + email).</p>
+                <form action="{{ route('profile.contact') }}" method="POST" class="space-y-3">
+                    @csrf
+                    <input name="sujet" required maxlength="150" placeholder="Sujet" class="edit-field">
+                    <textarea name="message" required maxlength="2000" rows="5" placeholder="Votre message..." class="edit-field"></textarea>
+                    <button type="submit" class="btn-primary w-full justify-center">
+                        <i data-lucide="send" class="w-4 h-4"></i> Envoyer le message
+                    </button>
+                </form>
             </div>
         </div>
 
@@ -1017,7 +1098,7 @@
         </div>
 
         {{-- Espace COUP DE FOUDRE --}}
-        <div class="mb-8">
+        <div class="mb-8" id="coup-de-coeur">
             <div class="flex items-center gap-2 mb-4">
                 <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#ef4444" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                     <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/>
@@ -1143,6 +1224,82 @@
                     </div>
                 </div>
             </div>
+
+            {{-- Recettes coup de cœur (recettes likées) --}}
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mt-6">
+                {{-- Dernière recette likée --}}
+                <div class="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
+                    <div class="bg-gradient-to-r from-orange-50 to-red-50 px-4 py-3 border-b border-gray-100">
+                        <div class="flex items-center gap-2">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#f97316" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h18M9 12h6M12 3v18"/></svg>
+                            <h3 class="font-semibold text-gray-800">Dernière recette aimée</h3>
+                        </div>
+                    </div>
+                    <div class="p-4">
+                        @if($lastLikedRecette)
+                        <a href="/UserHome" class="block">
+                            @if($lastLikedRecette->image_path)
+                            <div class="h-40 -mx-4 -mt-4 mb-3 overflow-hidden">
+                                <img src="{{ asset('storage/' . $lastLikedRecette->image_path) }}" alt="{{ $lastLikedRecette->titre }}" class="w-full h-full object-cover">
+                            </div>
+                            @endif
+                            <div class="flex items-center justify-between mb-2">
+                                <span class="inline-flex items-center gap-1 px-2 py-1 rounded-lg text-xs font-medium bg-orange-50 text-orange-600">Recette</span>
+                                <div class="flex items-center gap-1 text-red-500">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>
+                                    <span class="text-xs font-medium">{{ $lastLikedRecette->likes_count ?? 0 }}</span>
+                                </div>
+                            </div>
+                            <h4 class="font-semibold text-gray-800 mb-1">{{ $lastLikedRecette->titre }}</h4>
+                            <p class="text-xs text-gray-500">par <span class="font-medium text-orange-600">{{ $lastLikedRecette->user->name ?? 'Utilisateur' }}</span></p>
+                            <p class="text-sm text-gray-600 mt-2 line-clamp-2">{{ Str::limit($lastLikedRecette->description, 90) }}</p>
+                        </a>
+                        @else
+                        <div class="text-center py-8">
+                            <p class="text-gray-400">Aucune recette aimée pour le moment</p>
+                            <p class="text-xs text-gray-400 mt-1">Likez des recettes pour les retrouver ici !</p>
+                        </div>
+                        @endif
+                    </div>
+                </div>
+
+                {{-- Liste des recettes likées --}}
+                <div class="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
+                    <div class="bg-gradient-to-r from-orange-50 to-red-50 px-4 py-3 border-b border-gray-100">
+                        <div class="flex items-center gap-2">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#f97316" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>
+                            <h3 class="font-semibold text-gray-800">Mes recettes aimées</h3>
+                            <span class="text-xs text-gray-400">({{ $likedRecettes->count() }})</span>
+                        </div>
+                    </div>
+                    <div class="max-h-96 overflow-y-auto p-3 space-y-3">
+                        @forelse($likedRecettes as $like)
+                        <a href="/UserHome" class="flex items-center gap-3 p-3 rounded-xl border border-gray-100 hover:border-orange-200 hover:bg-orange-50/40 transition-all">
+                            <div class="w-12 h-12 bg-orange-50 rounded-lg overflow-hidden flex items-center justify-center shrink-0">
+                                @if($like->recette->image_path)
+                                    <img src="{{ asset('storage/' . $like->recette->image_path) }}" alt="{{ $like->recette->titre }}" class="w-full h-full object-cover">
+                                @else
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#f97316" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h18M9 12h6M12 3v18"/></svg>
+                                @endif
+                            </div>
+                            <div class="flex-1 min-w-0">
+                                <p class="font-medium text-gray-800 truncate">{{ $like->recette->titre }}</p>
+                                <p class="text-xs text-gray-400">par {{ $like->recette->user->name ?? 'Utilisateur' }}</p>
+                            </div>
+                            <div class="flex items-center gap-1 text-red-400 shrink-0">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="currentColor"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>
+                                <span class="text-xs">{{ $like->recette->likes_count ?? 0 }}</span>
+                            </div>
+                        </a>
+                        @empty
+                        <div class="text-center py-8">
+                            <p class="text-gray-400">Aucune recette aimée pour le moment</p>
+                            <p class="text-xs text-gray-400 mt-1">Explorez les recettes et likez vos préférées !</p>
+                        </div>
+                        @endforelse
+                    </div>
+                </div>
+            </div>
         </div>
 
         {{-- Tabs --}}
@@ -1154,27 +1311,14 @@
                             <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/>
                             <circle cx="12" cy="7" r="4"/>
                         </svg>
-                        Informations
-                    </button>
-                    <button @click="activeTab = 'posts'" :class="activeTab === 'posts' ? 'tab-btn active' : 'tab-btn'">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="inline mr-1">
-                            <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
-                            <polyline points="14 2 14 8 20 8"/>
-                        </svg>
-                        Mes publications
-                    </button>
-                    <button @click="activeTab = 'activities'" :class="activeTab === 'activities' ? 'tab-btn active' : 'tab-btn'">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="inline mr-1">
-                            <polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/>
-                        </svg>
-                        Activités récentes
+                        Mes informations
                     </button>
                 </div>
             </div>
 
             {{-- Onglet Informations --}}
             <div x-show="activeTab === 'infos'" class="p-6">
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-2">
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <div class="info-row">
                         <div class="info-label">
                             <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">

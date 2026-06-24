@@ -1,66 +1,175 @@
-<p align="center"><a href="https://laravel.com" target="_blank"><img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="400" alt="Laravel Logo"></a></p>
+<h1 align="center"> OURATABLE</h1>
 
 <p align="center">
-<a href="https://github.com/laravel/framework/actions"><img src="https://github.com/laravel/framework/workflows/tests/badge.svg" alt="Build Status"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/dt/laravel/framework" alt="Total Downloads"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/v/laravel/framework" alt="Latest Stable Version"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/l/laravel/framework" alt="License"></a>
+  <strong>L'art de bien manger</strong> — Plateforme communautaire de partage de recettes de cuisine.<br>
+  Construite avec Laravel 9.
 </p>
 
-## About Laravel
+---
 
-Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel takes the pain out of development by easing common tasks used in many web projects, such as:
+##  Présentation
 
-- [Simple, fast routing engine](https://laravel.com/docs/routing).
-- [Powerful dependency injection container](https://laravel.com/docs/container).
-- Multiple back-ends for [session](https://laravel.com/docs/session) and [cache](https://laravel.com/docs/cache) storage.
-- Expressive, intuitive [database ORM](https://laravel.com/docs/eloquent).
-- Database agnostic [schema migrations](https://laravel.com/docs/migrations).
-- [Robust background job processing](https://laravel.com/docs/queues).
-- [Real-time event broadcasting](https://laravel.com/docs/broadcasting).
+**OURATABLE** est un réseau social culinaire où chacun peut :
 
-Laravel is accessible, powerful, and provides tools required for large, robust applications.
+-  **Publier ses recettes** (titre, description, instructions, ingrédients, photo)
+-  **Donner des coups de cœur** aux recettes et aux publications de la communauté
+- **Échanger** via une communauté (publications, commentaires, messagerie privée et groupes de discussion)
+-  **Participer aux défis culinaires** générés par IA (DeepSeek, avec mode de secours hors-ligne)
+-  **Voter pour la recette de la semaine** — même sans compte (visiteurs anonymes)
+-  **Espace administrateur** complet pour gérer toutes les données et communiquer avec les membres
 
-## Learning Laravel
+---
 
-Laravel has the most extensive and thorough [documentation](https://laravel.com/docs) and video tutorial library of all modern web application frameworks, making it a breeze to get started with the framework.
+##  Fonctionnalités
 
-You may also try the [Laravel Bootcamp](https://bootcamp.laravel.com), where you will be guided through building a modern Laravel application from scratch.
+### Côté utilisateur
+| Fonctionnalité | Description |
+|---|---|
+| Inscription / Connexion | Avec **vérification de l'email** (lien signé envoyé par mail) |
+| Mon profil | Infos, badges, niveau/XP, statistiques |
+| Coups de cœur | Recettes likées **et** publications likées (+ dernier coup de cœur) — dans la page profil |
+| Mes recettes | CRUD complet des recettes avec ingrédients et image |
+| Communauté | Publications, commentaires, likes, messagerie privée, groupes, défis IA |
+| Recette de la semaine | Classement public des recettes les plus aimées des 7 derniers jours |
 
-If you don't feel like reading, [Laracasts](https://laracasts.com) can help. Laracasts contains over 2000 video tutorials on a range of topics including Laravel, modern PHP, unit testing, and JavaScript. Boost your skills by digging into our comprehensive video library.
+### Côté administrateur
+| Fonctionnalité | Description |
+|---|---|
+| Tableau de bord | Statistiques + gestion utilisateurs / recettes / publications / commentaires |
+| Permissions totales | L'admin peut supprimer n'importe quelle donnée et promouvoir/rétrograder des membres |
+| Email direct | Envoi d'un email à un membre ou à tous (SMTP) |
+| Message privé | Apparaît dans la messagerie communauté du membre |
+| Annonce communauté | Publication visible par toute la communauté |
+| Export CSV | Export de la liste des utilisateurs |
 
-## Laravel Sponsors
+### Anti-redondance (intégrité des données)
+- Un utilisateur ne peut liker **qu'une seule fois** une même recette / publication (contrainte unique en base)
+- Un membre ne peut rejoindre un groupe qu'une fois
+- Un visiteur ne peut voter qu'une fois par recette (empreinte de session/IP)
+- Pas de recette en double pour un même utilisateur (même titre)
+- Pas de publication en double du même contenu
 
-We would like to extend our thanks to the following sponsors for funding Laravel development. If you are interested in becoming a sponsor, please visit the Laravel [Patreon page](https://patreon.com/taylorotwell).
+---
 
-### Premium Partners
+## Stack technique
 
-- **[Vehikl](https://vehikl.com/)**
-- **[Tighten Co.](https://tighten.co)**
-- **[Kirschbaum Development Group](https://kirschbaumdevelopment.com)**
-- **[64 Robots](https://64robots.com)**
-- **[Cubet Techno Labs](https://cubettech.com)**
-- **[Cyber-Duck](https://cyber-duck.co.uk)**
-- **[Many](https://www.many.co.uk)**
-- **[Webdock, Fast VPS Hosting](https://www.webdock.io/en)**
-- **[DevSquad](https://devsquad.com)**
-- **[Curotec](https://www.curotec.com/services/technologies/laravel/)**
-- **[OP.GG](https://op.gg)**
-- **[WebReinvent](https://webreinvent.com/?utm_source=laravel&utm_medium=github&utm_campaign=patreon-sponsors)**
-- **[Lendio](https://lendio.com)**
+- **Laravel 9** (PHP 8.2)
+- **Base de données : SQLite** par défaut (zéro configuration) — MySQL possible
+- **Blade + Tailwind CSS** (CDN) + Alpine.js + Lucide icons
+- **Laravel Sanctum**, **libphonenumber** (validation des numéros)
+- **DeepSeek API** (optionnelle) pour les défis culinaires
 
-## Contributing
+---
 
-Thank you for considering contributing to the Laravel framework! The contribution guide can be found in the [Laravel documentation](https://laravel.com/docs/contributions).
+##  Installation et lancement local (Windows)
 
-## Code of Conduct
+### Prérequis
+- **PHP 8.2+** (extensions : `pdo_sqlite`, `mbstring`, `openssl`, `curl`, `fileinfo`, `gd`, `intl`, `zip`)
+- **Composer**
 
-In order to ensure that the Laravel community is welcoming to all, please review and abide by the [Code of Conduct](https://laravel.com/docs/contributions#code-of-conduct).
+> Sur cette machine, PHP est installé dans `C:\php82` et Composer dans `C:\php82\composer.phar`.
 
-## Security Vulnerabilities
+### Étapes
 
-If you discover a security vulnerability within Laravel, please send an e-mail to Taylor Otwell via [taylor@laravel.com](mailto:taylor@laravel.com). All security vulnerabilities will be promptly addressed.
+```bash
+# 1. Installer les dépendances PHP
+composer install
 
-## License
+# 2. Configuration (le fichier .env est déjà présent et configuré en SQLite)
+#    Si besoin : cp .env.example .env  puis  php artisan key:generate
 
-The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
+# 3. Créer la base + les tables + les données de démonstration
+php artisan migrate:fresh --seed
+
+# 4. Lien symbolique du storage (images)
+php artisan storage:link
+
+# 5. Lancer le serveur
+php artisan serve
+```
+
+L'application est disponible sur **http://127.0.0.1:8000**
+
+> Avec l'installation locale : `C:\php82\php.exe artisan serve`
+
+---
+
+##  Comptes de démonstration
+
+### Administratrice
+| Email | Mot de passe |
+|---|---|
+| `luciarasoanirina8@gmail.com` | `admin1707` |
+
+→ redirigée automatiquement vers `/admin`.
+
+### Utilisateurs (emails déjà vérifiés)
+| Nom | Email | Mot de passe |
+|---|---|---|
+| Anniah | `anniah@ouratable.mg` | `123456` |
+| Mbolatiana | `mbolatiana@ouratable.mg` | `123456` |
+| Joba | `joba@ouratable.mg` | `123456` |
+| Lorraine | `lorraine@ouratable.mg` | `123456` |
+| Genitah | `genitah@ouratable.mg` | `123456` |
+
+---
+
+##  Configuration de l'email
+
+L'envoi d'emails (vérification de compte, messages admin) utilise un compte Gmail (SMTP) configuré dans `.env` :
+
+```
+MAIL_MAILER=smtp
+MAIL_HOST=smtp.gmail.com
+MAIL_PORT=587
+MAIL_USERNAME=luciarasoanirina8@gmail.com
+MAIL_ENCRYPTION=tls
+```
+
+> Pour les défis IA en ligne, renseignez `DEEPSEEK_API_KEY` dans `.env` (sinon un mode de secours fournit des défis variés).
+
+---
+
+## Passer sur MySQL (optionnel)
+
+Dans `.env`, remplacez la connexion SQLite par :
+
+```
+DB_CONNECTION=mysql
+DB_HOST=127.0.0.1
+DB_PORT=3306
+DB_DATABASE=recette_db
+DB_USERNAME=root
+DB_PASSWORD=
+```
+
+Créez la base `recette_db` puis relancez `php artisan migrate:fresh --seed`.
+
+---
+
+##  Structure du projet
+
+```
+app/
+  Http/Controllers/   AuthController, RecetteController, UserRecetteController,
+                      CommunityController, ProfileController, AdminController,
+                      StatsController, VerificationController
+  Models/             User, Recette, Ingredient, Post, Comment, Like, RecipeVote,
+                      Conversation, Message, ChatGroup, GroupMessage, Challenge, AiChallenge
+  Mail/               OuratableVerificationMail, AdminMessageMail
+  Http/Middleware/    IsAdmin
+database/
+  migrations/         16 migrations (schéma complet)
+  seeders/            DatabaseSeeder (admin + 5 membres + données de démo)
+resources/views/
+  layouts/            header, UserHeader, AdminHeader, footer, UserFooter,
+                      AdminFooter, partials/weekly-recipe
+  page/               home, login, UserHome, UserCommunity, community, profile,
+                      recettes, admin, recette-semaine
+```
+
+---
+
+## Licence
+
+Projet sous licence MIT.

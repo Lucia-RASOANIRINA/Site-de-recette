@@ -39,6 +39,17 @@ class UserRecetteController extends Controller
                 'ingredients.*.quantite' => 'required|string|max:50',
             ]);
 
+            // Anti-redondance : pas deux recettes avec le meme titre pour un meme utilisateur
+            $exists = Recette::where('user_id', Auth::id())
+                ->whereRaw('LOWER(titre) = ?', [mb_strtolower(trim($request->titre))])
+                ->exists();
+            if ($exists) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Vous avez deja une recette avec ce titre.'
+                ], 422);
+            }
+
             $imagePath = null;
             if ($request->hasFile('image')) {
                 $imagePath = $request->file('image')->store('recettes', 'public');
@@ -204,8 +215,12 @@ class UserRecetteController extends Controller
     public function destroy($id)
     {
         try {
-            $recette = Recette::where('user_id', Auth::id())->findOrFail($id);
-            
+            $query = Recette::query();
+            if (!Auth::user()->isAdmin()) {
+                $query->where('user_id', Auth::id());
+            }
+            $recette = $query->findOrFail($id);
+
             if ($recette->image_path && Storage::disk('public')->exists($recette->image_path)) {
                 Storage::disk('public')->delete($recette->image_path);
             }

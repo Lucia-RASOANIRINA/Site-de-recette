@@ -16,6 +16,7 @@ use App\Models\AiChallenge;
 use App\Services\DeepSeekService;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 
 class CommunityController extends Controller
 {
@@ -36,6 +37,20 @@ class CommunityController extends Controller
         return view('page.community', compact('posts', 'totalMembres', 'totalPosts', 'totalComments'));
     }
 
+    /**
+     * Communaute publique (visiteurs sans compte) - lecture seule.
+     */
+    public function publicCommunity()
+    {
+        $posts = Post::with(['user', 'comments.user'])->withCount(['likes', 'comments'])->latest()->limit(30)->get();
+        $totalMembres = User::where('role', '!=', 'admin')->count();
+        $totalPosts = Post::count();
+        $totalComments = Comment::count();
+        $topRecettes = \App\Models\Recette::with('user')->withCount('likes')->orderByDesc('likes_count')->limit(6)->get();
+
+        return view('page.communaute-public', compact('posts', 'totalMembres', 'totalPosts', 'totalComments', 'topRecettes'));
+    }
+
     public function userCommunity()
     {
         $posts = Post::with(['user', 'comments.user', 'likes'])->latest()->paginate(10);
@@ -46,8 +61,7 @@ class CommunityController extends Controller
             ->first();
             
         if (!$aiChallenge) {
-            $this->generateNewAiChallenge();
-            $aiChallenge = AiChallenge::where('is_active', true)->latest()->first();
+            $aiChallenge = $this->generateNewAiChallenge();
         }
         
         $totalMembres = User::count();
@@ -78,19 +92,137 @@ class CommunityController extends Controller
         ));
     }
 
+    /**
+     * Generer un nouveau defi IA via DeepSeek API avec historique
+     */
     public function generateNewAiChallenge()
     {
-        $challengeData = $this->deepSeek->generateChallenge();
-        
+        try {
+            // Recuperer l'historique des defis precedents pour eviter les repetitions
+            $previousChallenges = AiChallenge::orderBy('created_at', 'desc')
+                ->take(10)
+                ->get();
+            
+            $previousTitles = $previousChallenges->pluck('title')->toArray();
+            
+            // Recuperer les ingredients deja utilises
+            $previousIngredients = $previousChallenges
+                ->flatMap(function($challenge) {
+                    if (is_string($challenge->ingredients)) {
+                        return json_decode($challenge->ingredients, true) ?? [];
+                    }
+                    return $challenge->ingredients ?? [];
+                })
+                ->unique()
+                ->toArray();
+
+            // Appeler DeepSeek avec historique
+            $challengeData = $this->deepSeek->generateChallenge($previousTitles, $previousIngredients);
+            
+            // Desactiver l'ancien defi
+            AiChallenge::where('is_active', true)->update(['is_active' => false]);
+            
+            // Creer le nouveau defi (le cast 'array' du modele gere l'encodage JSON)
+            return AiChallenge::create([
+                'title' => $challengeData['title'],
+                'description' => $challengeData['description'],
+                'ingredients' => $challengeData['ingredients'],
+                'instructions' => null,
+                'difficulty' => $challengeData['difficulty'] ?? 'moyen',
+                'duration' => $challengeData['duration'] ?? 7,
+                'expires_at' => now()->addDays($challengeData['duration'] ?? 7),
+                'is_active' => true,
+            ]);
+
+        } catch (\Exception $e) {
+            Log::error('Erreur generation defi: ' . $e->getMessage());
+            return $this->createFallbackChallenge();
+        }
+    }
+
+    /**
+     * Creer un defi de secours varie
+     */
+    private function createFallbackChallenge()
+    {
+        // Desactiver l'ancien defi
         AiChallenge::where('is_active', true)->update(['is_active' => false]);
         
+        // Liste de defis varies
+        $challenges = [
+            [
+                'title' => 'Tour du Monde en 5 Plats',
+                'description' => 'Creez un menu compose de 5 plats inspires de 5 pays differents. Chaque plat doit representer une culture culinaire unique.',
+                'ingredients' => ['Epices du monde', 'Herbes fraiches', 'Legumes de saison'],
+                'difficulty' => 'difficile'
+            ],
+            [
+                'title' => 'Le Defi Zero Dechet',
+                'description' => 'Realisez un repas complet avec ce que vous avez deja dans votre cuisine.',
+                'ingredients' => ['Ce que vous avez dans le frigo', 'Ce que vous avez dans le placard'],
+                'difficulty' => 'facile'
+            ],
+            [
+                'title' => 'Cuisine Moleculaire Express',
+                'description' => 'Utilisez une technique de cuisine moleculaire pour surprendre vos convives.',
+                'ingredients' => ['Agar-agar', 'Lecithine', 'Alginate'],
+                'difficulty' => 'difficile'
+            ],
+            [
+                'title' => 'Le Festin des Couleurs',
+                'description' => 'Creez un repas avec des ingredients de 5 couleurs differentes.',
+                'ingredients' => ['Tomate', 'Carotte', 'Poivron', 'Aubergine', 'Champignon'],
+                'difficulty' => 'moyen'
+            ],
+            [
+                'title' => 'La Cuisine Lente',
+                'description' => 'Preparez un plat qui necessite une cuisson lente.',
+                'ingredients' => ['Viande a braiser', 'Legumes racines', 'Vin'],
+                'difficulty' => 'difficile'
+            ],
+            [
+                'title' => 'Le Buffet Vegetal',
+                'description' => 'Creez un buffet 100% vegetal avec des recettes originales.',
+                'ingredients' => ['Legumineuses', 'Cereales', 'Legumes', 'Herbes'],
+                'difficulty' => 'moyen'
+            ],
+            [
+                'title' => 'Le Defi des Epices',
+                'description' => 'Creez un plat en utilisant au moins 5 epices differentes.',
+                'ingredients' => ['Cumin', 'Coriandre', 'Curcuma', 'Gingembre', 'Cannelle'],
+                'difficulty' => 'moyen'
+            ],
+            [
+                'title' => 'Le Defi Fusion',
+                'description' => 'Creez un plat qui marie les saveurs orientales et occidentales.',
+                'ingredients' => ['Couscous', 'Safran', 'Curry', 'Creme fraiche'],
+                'difficulty' => 'difficile'
+            ],
+            [
+                'title' => 'Le Defi de la Mer',
+                'description' => 'Creez un plateau de fruits de mer original avec des associations surprenantes.',
+                'ingredients' => ['Poissons', 'Fruits de mer', 'Agrumes', 'Herbes marines'],
+                'difficulty' => 'difficile'
+            ]
+        ];
+
+        // Choisir un defi aleatoire (pas toujours le meme)
+        $selected = $challenges[array_rand($challenges)];
+        
+        // Ajouter un suffixe pour eviter les doublons
+        $existing = AiChallenge::where('title', 'like', $selected['title'] . '%')->count();
+        if ($existing > 0) {
+            $selected['title'] = $selected['title'] . ' - Edition ' . ($existing + 1);
+        }
+        
         return AiChallenge::create([
-            'title' => $challengeData['title'],
-            'description' => $challengeData['description'],
-            'ingredients' => $challengeData['ingredients'],
-            'difficulty' => $challengeData['difficulty'],
-            'duration' => $challengeData['duration'],
-            'expires_at' => now()->addDays($challengeData['duration']),
+            'title' => $selected['title'],
+            'description' => $selected['description'],
+            'ingredients' => $selected['ingredients'],
+            'instructions' => null,
+            'difficulty' => $selected['difficulty'],
+            'duration' => 7,
+            'expires_at' => now()->addDays(7),
             'is_active' => true,
         ]);
     }
@@ -125,7 +257,7 @@ class CommunityController extends Controller
             $group->decrement('member_count');
         }
         
-        return response()->json(['success' => true, 'message' => 'Groupe quitté', 'is_member' => false]);
+        return response()->json(['success' => true, 'message' => 'Groupe quitte', 'is_member' => false]);
     }
 
     public function getGroupMessages($groupId)
@@ -133,7 +265,7 @@ class CommunityController extends Controller
         $group = ChatGroup::findOrFail($groupId);
         
         if (!$group->isMember(Auth::id())) {
-            return response()->json(['error' => 'Non autorisé'], 403);
+            return response()->json(['error' => 'Non autorise'], 403);
         }
         
         $messages = GroupMessage::where('group_id', $groupId)
@@ -164,7 +296,7 @@ class CommunityController extends Controller
         $group = ChatGroup::findOrFail($request->group_id);
         
         if (!$group->isMember(Auth::id())) {
-            return response()->json(['error' => 'Non autorisé'], 403);
+            return response()->json(['error' => 'Non autorise'], 403);
         }
         
         $message = GroupMessage::create([
@@ -215,7 +347,7 @@ class CommunityController extends Controller
         $otherUserId = $request->user_id;
 
         if ($userId == $otherUserId) {
-            return response()->json(['error' => 'Vous ne pouvez pas discuter avec vous-même'], 400);
+            return response()->json(['error' => 'Vous ne pouvez pas discuter avec vous-meme'], 400);
         }
 
         $conversation = Conversation::where('is_group', false)
@@ -274,7 +406,7 @@ class CommunityController extends Controller
         if ($conversation->is_group) {
             $group = ChatGroup::find($conversation->group_id);
             if (!$group || !$group->isMember(Auth::id())) {
-                return response()->json(['error' => 'Non autorisé'], 403);
+                return response()->json(['error' => 'Non autorise'], 403);
             }
             
             $messages = GroupMessage::where('group_id', $group->id)
@@ -298,7 +430,7 @@ class CommunityController extends Controller
         }
         
         if ($conversation->user_one != Auth::id() && $conversation->user_two != Auth::id()) {
-            return response()->json(['error' => 'Non autorisé'], 403);
+            return response()->json(['error' => 'Non autorise'], 403);
         }
 
         Message::where('conversation_id', $conversationId)
@@ -340,7 +472,7 @@ class CommunityController extends Controller
         }
         
         if ($conversation->user_one != Auth::id() && $conversation->user_two != Auth::id()) {
-            return response()->json(['error' => 'Non autorisé'], 403);
+            return response()->json(['error' => 'Non autorise'], 403);
         }
 
         $message = Message::create([
@@ -403,7 +535,7 @@ class CommunityController extends Controller
                     'type' => 'group',
                     'group_id' => $conv->group_id,
                     'name' => $conv->group->name,
-                    'avatar' => $conv->group->icon,
+                    'avatar' => strtoupper(substr($conv->group->name, 0, 2)),
                     'last_message' => $lastMsg ? $lastMsg->content : null,
                     'last_message_time' => $conv->last_message_at ? $conv->last_message_at->diffForHumans() : null,
                     'unread_count' => 0,
@@ -424,7 +556,7 @@ class CommunityController extends Controller
         $group = ChatGroup::findOrFail($groupId);
         
         if (!$group->isMember(Auth::id())) {
-            return response()->json(['error' => 'Non autorisé'], 403);
+            return response()->json(['error' => 'Non autorise'], 403);
         }
         
         $members = $group->members()->get()->map(function($user) {
@@ -473,6 +605,18 @@ class CommunityController extends Controller
             'type' => 'required'
         ]);
 
+        // Anti-redondance : empeche la publication en double du meme contenu
+        $duplicate = Post::where('user_id', Auth::id())
+            ->where('content', trim($request->content))
+            ->where('created_at', '>=', now()->subMinutes(5))
+            ->exists();
+        if ($duplicate) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Vous avez deja publie ce contenu recemment.'
+            ], 422);
+        }
+
         $imagePath = null;
 
         if ($request->hasFile('image')) {
@@ -518,7 +662,6 @@ class CommunityController extends Controller
         ]);
     }
 
-    // Modification d'un commentaire
     public function updateComment(Request $request, $id)
     {
         $comment = Comment::where('id', $id)->where('user_id', Auth::id())->firstOrFail();
@@ -527,12 +670,15 @@ class CommunityController extends Controller
         return response()->json(['success' => true, 'comment' => $comment]);
     }
 
-    // Suppression d'un commentaire
     public function deleteComment($id)
     {
-        $comment = Comment::where('id', $id)->where('user_id', Auth::id())->firstOrFail();
+        $query = Comment::where('id', $id);
+        if (!Auth::user()->isAdmin()) {
+            $query->where('user_id', Auth::id());
+        }
+        $comment = $query->firstOrFail();
         $comment->delete();
-        
+
         return response()->json(['success' => true]);
     }
 
@@ -579,7 +725,11 @@ class CommunityController extends Controller
 
     public function deletePost($id)
     {
-        $post = Post::where('id', $id)->where('user_id', Auth::id())->firstOrFail();
+        $query = Post::where('id', $id);
+        if (!Auth::user()->isAdmin()) {
+            $query->where('user_id', Auth::id());
+        }
+        $post = $query->firstOrFail();
         $post->delete();
         return response()->json(['success' => true]);
     }

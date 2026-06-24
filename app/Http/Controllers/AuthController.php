@@ -83,7 +83,19 @@ class AuthController extends Controller
         Auth::login($user);
         $request->session()->regenerate();
 
-        return redirect()->intended('/UserHome')->with('welcome_back', 'Heureux de vous revoir ' . $user->name . ' ! Votre couvert est mis.');
+        // Connexion reussie : on affiche un message de bienvenue (modal stylise)
+        // sur la page de login, puis redirection automatique vers la destination.
+        if ($user->isAdmin()) {
+            $destination = route('admin.dashboard');
+            $message = 'Bienvenue, ' . $user->name . ' ! Votre tableau de bord vous attend.';
+        } else {
+            $destination = '/UserHome';
+            $message = 'Heureux de vous revoir ' . $user->name . ' ! Votre couvert est mis.';
+        }
+
+        return redirect()->route('login')
+            ->with('welcome_back', $message)
+            ->with('redirect_to', $destination);
     }
 
     // DÉCONNEXION

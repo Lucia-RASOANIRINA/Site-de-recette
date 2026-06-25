@@ -1385,7 +1385,7 @@
             <div class="bg-white rounded-xl border p-12 text-center">
                 <i data-lucide="utensils" class="w-14 h-14 text-gray-300 mx-auto mb-3"></i>
                 <p class="text-gray-400">Aucune publication pour le moment</p>
-                <p class="text-xs text-gray-300 mt-2">Soyez le premier à partager !</p>
+                <p class="text-xs text-gray-500 mt-2">Soyez le premier à partager !</p>
             </div>
             @endforelse
         </div>

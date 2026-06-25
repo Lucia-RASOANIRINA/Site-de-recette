@@ -1,6 +1,7 @@
 @extends('layouts.UserHeader')
 
 @section('content')
+@include('partials.recipe-inline')
 @include('partials.search-results')
 <style>
     [x-cloak] { display: none !important; }
@@ -446,7 +447,7 @@
                             <img src="{{ asset('storage/' . $recette->image_path) }}"
                                 class="carousel-image w-48 h-64 md:w-64 md:h-80 object-cover rounded-[2.5rem] shadow-2xl border-[10px] border-white transition-all duration-300 cursor-pointer group-hover:scale-[1.03] group-hover:border-orange-400"
                                 :class="currentIndex === {{ $index }} ? 'active' : ''"
-                                @click="currentIndex === {{ $index }} ? window.location.href='{{ route('recette.page', $recette->id) }}' : null">
+                                @click="currentIndex === {{ $index }} ? window.location.href='?recette={{ $recette->id }}' : null">
                         </div>
                     </div>
                 @endforeach
@@ -471,7 +472,7 @@
                     
                     <div class="absolute inset-y-0 left-0 w-3/4 bg-orange-500 rounded-r-[40px] transition-colors duration-500 group-hover:bg-orange-600"></div>
 
-                    <div class="relative z-10 w-32 h-32 md:w-40 md:h-40 rounded-full overflow-hidden transition-transform duration-500 group-hover:scale-105 group-hover:rotate-2 cursor-pointer" onclick="window.location.href='{{ route('recette.page', $recette->id) }}'">
+                    <div class="relative z-10 w-32 h-32 md:w-40 md:h-40 rounded-full overflow-hidden transition-transform duration-500 group-hover:scale-105 group-hover:rotate-2 cursor-pointer" onclick="window.location.href='?recette={{ $recette->id }}'">
 
                         <div class="absolute inset-2 rounded-full bg-orange-900/10 blur-xl transition-all duration-500 group-hover:bg-orange-900/20"></div>
 

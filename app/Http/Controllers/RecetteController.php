@@ -7,47 +7,98 @@ use App\Models\Recette;
 use App\Models\Like;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Log;
+use App\Services\RecommendationService;
 
 class RecetteController extends Controller
 {
     /**
-     * 1. Page d'accueil publique (sans forcément être connecté)
+     * Page d'accueil publique (visiteurs et membres non requis).
+     *
+     * Les recettes sont classées par recommandation (popularité pour un
+     * visiteur). Les paramètres de requête permettent l'affichage in-page :
+     *   - « q »       : résultats de recherche affichés en haut de page ;
+     *   - « recette » : détail d'une recette affiché en haut de page.
      */
     public function index()
     {
         try {
             $recettes = Recette::with(['ingredients', 'user', 'likes'])
-                ->orderBy('created_at', 'desc')
+                ->withCount('likes')
                 ->get();
+
+            $recettes = RecommendationService::order($recettes, Auth::user());
+
             $search = SearchController::query(request('q'));
-            return view('home', compact('recettes', 'search'));
+            $selectedRecette = $this->resolveSelectedRecette(request('recette'));
+
+            return view('home', compact('recettes', 'search', 'selectedRecette'));
         } catch (\Exception $e) {
-            Log::error('Erreur index: ' . $e->getMessage());
-            return view('home', ['recettes' => collect(), 'search' => SearchController::query(null)])->with('error', 'Erreur de chargement des recettes');
+            Log::error('Erreur index recettes : ' . $e->getMessage());
+
+            return view('home', [
+                'recettes' => collect(),
+                'search' => SearchController::query(null),
+                'selectedRecette' => null,
+            ])->with('error', 'Erreur de chargement des recettes.');
         }
     }
 
     /**
-     * 2. Espace utilisateur (UserHome) - avec les likes
+     * Espace d'accueil de l'utilisateur connecté (UserHome).
+     *
+     * Les recettes sont recommandées en fonction du profil du membre. Comme
+     * pour l'accueil public, la recherche et le détail d'une recette s'affichent
+     * directement dans la page via les paramètres « q » et « recette ».
      */
     public function userIndex()
     {
         try {
-            // Récupérer les recettes avec les relations
             $recettes = Recette::with(['ingredients', 'likes', 'user'])
-                ->orderBy('created_at', 'desc')
+                ->withCount('likes')
                 ->get();
 
+            $recettes = RecommendationService::order($recettes, Auth::user());
+
             $search = SearchController::query(request('q'));
-            return view('page.UserHome', compact('recettes', 'search'));
+            $selectedRecette = $this->resolveSelectedRecette(request('recette'));
+
+            return view('page.UserHome', compact('recettes', 'search', 'selectedRecette'));
         } catch (\Exception $e) {
-            Log::error('Erreur userIndex: ' . $e->getMessage());
-            return back()->with('error', 'Erreur de chargement des recettes');
+            Log::error('Erreur userIndex : ' . $e->getMessage());
+
+            return back()->with('error', 'Erreur de chargement des recettes.');
         }
     }
 
     /**
-     * Page de détail d'une recette (avec ingrédients).
+     * Charge la recette sélectionnée pour l'affichage in-page, ou null.
+     *
+     * @param  mixed  $id  Identifiant éventuel transmis via la requête.
+     */
+    private function resolveSelectedRecette($id): ?Recette
+    {
+        if (empty($id)) {
+            return null;
+        }
+
+        $recette = Recette::with(['ingredients', 'user'])->withCount('likes')->find($id);
+
+        if ($recette) {
+            $recette->is_liked_by_current = Auth::check()
+                && $recette->likes()->where('user_id', Auth::id())->exists();
+
+            // Petite recommandation : autres recettes suggérées selon le profil.
+            $autres = Recette::with('user')->withCount('likes')
+                ->where('id', '!=', $recette->id)
+                ->get();
+            $recette->setRelation('autres', RecommendationService::order($autres, Auth::user())->take(4));
+        }
+
+        return $recette;
+    }
+
+    /**
+     * Page dédiée au détail d'une recette (lien direct, partage).
      */
     public function showPage($id)
     {
@@ -82,6 +133,10 @@ class RecetteController extends Controller
             if ($existingLike) {
                 // Supprimer le like
                 $existingLike->delete();
+                // Retrait de l'XP précédemment créditée à l'auteur.
+                if ($recette->user && $recette->user_id !== $user->id) {
+                    $recette->user->addXp(-10);
+                }
                 $liked = false;
                 $message = 'Like retiré';
             } else {
@@ -90,6 +145,10 @@ class RecetteController extends Controller
                     'user_id' => $user->id,
                     'recette_id' => $recette->id
                 ]);
+                // L'auteur de la recette gagne de l'XP pour le « coup de cœur » reçu.
+                if ($recette->user && $recette->user_id !== $user->id) {
+                    $recette->user->addXp(10);
+                }
                 $liked = true;
                 $message = 'Like ajouté';
             }

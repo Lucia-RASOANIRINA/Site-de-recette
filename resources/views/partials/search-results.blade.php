@@ -35,7 +35,7 @@
                 </h3>
                 <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
                     @foreach($search['recettes'] as $r)
-                    <a href="{{ route('recette.page', $r->id) }}" class="block rounded-2xl border border-gray-100 overflow-hidden hover:shadow-md hover:border-orange-200 transition-all">
+                    <a href="?recette={{ $r->id }}" class="block rounded-2xl border border-gray-100 overflow-hidden hover:shadow-md hover:border-orange-200 transition-all">
                         <div class="h-32 bg-gray-100 overflow-hidden">
                             @if($r->image_path)
                                 <img src="{{ asset('storage/' . $r->image_path) }}" alt="{{ $r->titre }}" class="w-full h-full object-cover">

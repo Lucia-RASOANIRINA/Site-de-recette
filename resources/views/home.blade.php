@@ -2,7 +2,8 @@
 @extends('layouts.header')
 
 @section('content')
-@if(!empty($search) && $search['q'] !== '')<div class="pt-24"></div>@endif
+@if((!empty($search) && $search['q'] !== '') || !empty($selectedRecette))<div class="pt-24"></div>@endif
+@include('partials.recipe-inline')
 @include('partials.search-results')
 <style>
     [x-cloak] { display: none !important; }
@@ -68,8 +69,8 @@
                 </p>
 
                 <div class="mt-6 pt-4 border-t border-gray-200 text-center md:text-right">
-                    <span class="text-xs font-black uppercase tracking-[0.3em] text-gray-300">
-                        Oura<span class="text-orange-500/50">Table</span>
+                    <span class="text-xs font-black uppercase tracking-[0.3em] text-gray-500">
+                        Oura<span class="text-orange-500">Table</span>
                     </span>
                 </div>
             </div>
@@ -115,7 +116,7 @@
                                 <i data-lucide="award" class="w-5 h-5 text-orange-400"></i>
                             </div>
 
-                            <a href="{{ route('recette.page', $recette->id) }}" title="Voir la recette « {{ $recette->titre }} »">
+                            <a href="?recette={{ $recette->id }}" title="Voir la recette « {{ $recette->titre }} »">
                                 <img src="{{ asset('storage/' . $recette->image_path) }}"
                                     class="w-48 h-64 md:w-64 md:h-80 object-cover rounded-[2.5rem] shadow-2xl border-[10px] border-white transition-all duration-300 cursor-pointer group-hover:scale-[1.03] group-hover:border-orange-400">
                             </a>
@@ -135,7 +136,7 @@
             @endphp
             <div class="group relative bg-white rounded-[40px] shadow-sm border border-gray-200 p-4 pt-0 transition-all duration-500 hover:shadow-xl hover:-translate-y-2">
                 <div class="relative -mt-12 mb-6 flex justify-center">
-                    <a href="{{ route('recette.page', $recette->id) }}" class="relative w-48 h-48 rounded-full transition-transform duration-700 ease-out group-hover:scale-110 group-hover:rotate-6" title="Voir la recette">
+                    <a href="?recette={{ $recette->id }}" class="relative w-48 h-48 rounded-full transition-transform duration-700 ease-out group-hover:scale-110 group-hover:rotate-6" title="Voir la recette">
                         <div class="absolute inset-2 rounded-full bg-black/5 blur-xl group-hover:bg-black/20 transition-all duration-700"></div>
                         <img src="{{ asset('storage/'.$recette->image_path) }}"
                             class="relative w-full h-full object-cover rounded-full border-[8px] border-white shadow-sm cursor-pointer">

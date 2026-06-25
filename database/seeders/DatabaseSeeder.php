@@ -28,7 +28,7 @@ class DatabaseSeeder extends Seeder
                 'password' => Hash::make('admin1707'),
                 'role' => 'admin',
                 'email_verified_at' => now(),
-                'bio' => "Administratrice et fondatrice d'OURATABLE, passionnee de cuisine du monde.",
+                'bio' => null,
                 'specialty' => 'Gestion de la plateforme',
                 'city' => 'Antananarivo',
             ]
@@ -131,6 +131,8 @@ class DatabaseSeeder extends Seeder
         $recettes = [];
         foreach ($recettesData as $rd) {
             [$author, $titre, $pays, $image, $desc, $ings] = $rd;
+            // Garantit la présence de l'image (génère un visuel de secours si absente).
+            $this->ensureImage('recettes/' . $image, $titre);
             $recette = Recette::firstOrCreate(
                 ['titre' => $titre],
                 [
@@ -159,6 +161,7 @@ class DatabaseSeeder extends Seeder
             ];
             $created = [];
             foreach ($posts as $p) {
+                $this->ensureImage($p[3], $p[2]);
                 $created[] = Post::create(['user_id' => $users[$p[0]]->id, 'type' => $p[1], 'content' => $p[2], 'image_path' => $p[3]]);
             }
             Comment::create(['user_id' => $users['Lorraine']->id, 'post_id' => $created[0]->id, 'content' => 'Ca a l\'air delicieux, je teste ce week-end !']);
@@ -203,5 +206,47 @@ class DatabaseSeeder extends Seeder
                 );
             }
         }
+    }
+
+    /**
+     * Garantit l'existence d'un fichier image sur le disque public.
+     *
+     * Si l'image est absente (cas d'un déploiement où les médias ne sont pas
+     * versionnés), un visuel de secours est généré via GD : dégradé orange de
+     * la charte et libellé. L'opération est silencieuse si GD est indisponible.
+     *
+     * @param  string  $relativePath  Chemin relatif au disque public (ex. « recettes/burger.jpg »).
+     * @param  string  $label         Texte affiché sur le visuel de secours.
+     */
+    private function ensureImage(string $relativePath, string $label): void
+    {
+        $fullPath = storage_path('app/public/' . $relativePath);
+
+        if (file_exists($fullPath) || !function_exists('imagecreatetruecolor')) {
+            return;
+        }
+
+        @mkdir(dirname($fullPath), 0775, true);
+
+        $width = 800;
+        $height = 600;
+        $image = imagecreatetruecolor($width, $height);
+
+        for ($y = 0; $y < $height; $y++) {
+            $r = (int) max(0, 249 - ($y / $height) * 40);
+            $g = (int) max(0, 115 - ($y / $height) * 45);
+            $color = imagecolorallocate($image, $r, $g, 22);
+            imageline($image, 0, $y, $width, $y, $color);
+        }
+
+        $white = imagecolorallocate($image, 255, 255, 255);
+        $text = mb_strtoupper(Str::limit($label, 28, ''));
+        $font = 5;
+        $x = max(20, (int) (($width - imagefontwidth($font) * strlen($text)) / 2));
+        imagestring($image, $font, $x, 280, $text, $white);
+        imagestring($image, 3, 30, 30, 'OURATABLE', $white);
+
+        imagejpeg($image, $fullPath, 85);
+        imagedestroy($image);
     }
 }

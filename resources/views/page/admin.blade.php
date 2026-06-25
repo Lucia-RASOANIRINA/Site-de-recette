@@ -265,7 +265,20 @@
             <p class="text-xs text-gray-500 mb-3">Publiée pour toute la communauté.</p>
             <form action="{{ route('admin.broadcast') }}" method="POST" enctype="multipart/form-data" class="space-y-3">@csrf
                 <textarea name="content" rows="6" placeholder="Votre annonce..." class="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm" required></textarea>
-                <input type="file" name="image" accept="image/*" class="w-full text-xs">
+
+                {{-- Sélecteur de fichier personnalisé --}}
+                <label for="broadcast-image" class="group flex items-center gap-3 w-full px-4 py-3 rounded-xl border-2 border-dashed border-gray-200 hover:border-orange-400 hover:bg-orange-50/50 cursor-pointer transition-all">
+                    <span class="w-10 h-10 rounded-lg bg-orange-100 text-orange-600 group-hover:bg-orange-500 group-hover:text-white flex items-center justify-center shrink-0 transition-colors">
+                        <i data-lucide="image-plus" class="w-5 h-5"></i>
+                    </span>
+                    <span class="min-w-0">
+                        <span class="block text-sm font-semibold text-gray-700">Ajouter une image</span>
+                        <span id="broadcast-image-name" class="block text-xs text-gray-400 truncate">Aucun fichier choisi (PNG, JPG…)</span>
+                    </span>
+                    <input id="broadcast-image" type="file" name="image" accept="image/*" class="hidden"
+                           onchange="document.getElementById('broadcast-image-name').textContent = this.files.length ? this.files[0].name : 'Aucun fichier choisi (PNG, JPG…)'">
+                </label>
+
                 <button class="w-full py-2 rounded-lg bg-purple-500 hover:bg-purple-600 text-white text-sm font-semibold">Publier l'annonce</button>
             </form>
         </div>

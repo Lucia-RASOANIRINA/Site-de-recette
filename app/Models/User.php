@@ -126,7 +126,36 @@ class User extends Authenticatable implements MustVerifyEmail
      */
     public function isAdmin()
     {
-        return $this->role === 'admin'; 
+        return $this->role === 'admin';
+    }
+
+    /**
+     * Crédite l'utilisateur en points d'expérience et gère la montée de niveau.
+     *
+     * L'XP représente la progression à l'intérieur du niveau courant. Lorsqu'elle
+     * atteint le seuil (« next_level_xp »), le niveau augmente et le seuil suivant
+     * est recalculé (1000 XP par niveau).
+     *
+     * @param  int  $amount  Points à créditer (peut être négatif, ex. retrait d'un like).
+     */
+    public function addXp(int $amount): void
+    {
+        $xp = max(0, (int) ($this->xp ?? 0) + $amount);
+        $level = (int) ($this->level ?? 1);
+        $threshold = (int) ($this->next_level_xp ?? 1000);
+
+        // Montées de niveau successives tant que le seuil est franchi.
+        while ($xp >= $threshold) {
+            $xp -= $threshold;
+            $level++;
+            $threshold = $level * 1000;
+        }
+
+        $this->forceFill([
+            'xp' => $xp,
+            'level' => $level,
+            'next_level_xp' => $threshold,
+        ])->save();
     }
 
     /**

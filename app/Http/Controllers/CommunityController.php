@@ -630,6 +630,9 @@ class CommunityController extends Controller
             'image_path' => $imagePath
         ]);
 
+        // Récompense d'expérience pour la publication.
+        Auth::user()->addXp(20);
+
         return response()->json(['success' => true, 'post' => $post]);
     }
 
@@ -645,6 +648,9 @@ class CommunityController extends Controller
             'post_id' => $request->post_id,
             'content' => $request->content
         ]);
+
+        // Récompense d'expérience pour le commentaire.
+        Auth::user()->addXp(5);
 
         $comment->load('user');
 
@@ -691,6 +697,10 @@ class CommunityController extends Controller
 
         if ($like) {
             $like->delete();
+            // Retrait de l'XP précédemment créditée à l'auteur.
+            if ($post->user && $post->user_id !== auth()->id()) {
+                $post->user->addXp(-10);
+            }
             $likesCount = $post->likes()->count();
             return response()->json(['success' => true, 'liked' => false, 'likes' => $likesCount]);
         } else {
@@ -698,6 +708,10 @@ class CommunityController extends Controller
                 'user_id' => auth()->id(),
                 'post_id' => $id
             ]);
+            // L'auteur de la publication gagne de l'XP pour le « coup de cœur » reçu.
+            if ($post->user && $post->user_id !== auth()->id()) {
+                $post->user->addXp(10);
+            }
             $likesCount = $post->likes()->count();
             return response()->json(['success' => true, 'liked' => true, 'likes' => $likesCount]);
         }

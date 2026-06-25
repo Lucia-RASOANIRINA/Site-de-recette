@@ -80,6 +80,9 @@ class UserRecetteController extends Controller
                 }
             }
 
+            // Récompense d'expérience pour la publication d'une recette.
+            Auth::user()->addXp(50);
+
             return response()->json([
                 'success' => true,
                 'message' => 'Recette cree avec succes !',

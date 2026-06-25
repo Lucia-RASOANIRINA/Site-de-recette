@@ -1,0 +1,38 @@
+# =====================================================================
+#  Blueprint Render.com pour OURATABLE (déploiement gratuit)
+#  Render lit ce fichier automatiquement lors de la création d'un service.
+# =====================================================================
+services:
+  - type: web
+    name: ouratable
+    runtime: docker
+    plan: free
+    region: frankfurt
+    envVars:
+      # À définir dans le tableau de bord Render :
+      #   APP_KEY = sortie de « php artisan key:generate --show »
+      - key: APP_KEY
+        sync: false
+      - key: APP_ENV
+        value: production
+      - key: APP_DEBUG
+        value: "false"
+      - key: APP_URL
+        sync: false            # ex. https://ouratable.onrender.com
+      - key: DB_CONNECTION
+        value: sqlite
+      - key: DB_DATABASE
+        value: /app/database/database.sqlite
+      # Email (optionnel) — renseigner pour activer l'envoi
+      - key: MAIL_MAILER
+        value: smtp
+      - key: MAIL_HOST
+        value: smtp.gmail.com
+      - key: MAIL_PORT
+        value: "587"
+      - key: MAIL_USERNAME
+        sync: false
+      - key: MAIL_PASSWORD
+        sync: false
+      - key: MAIL_ENCRYPTION
+        value: tls

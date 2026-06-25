@@ -7,39 +7,63 @@ use Illuminate\Support\Facades\Auth;
 use App\Models\Recette;
 use App\Models\Post;
 use App\Models\User;
+use App\Services\RecommendationService;
 
+/**
+ * Recherche globale de la plateforme.
+ *
+ * Couvre les recettes, les publications et les membres. Pour un utilisateur
+ * connecté, les recettes trouvées sont reclassées selon son profil
+ * (recommandations). Le point d'entrée redirige le résultat vers la page
+ * adaptée au rôle de l'internaute.
+ */
 class SearchController extends Controller
 {
     /**
-     * Recherche intelligente sur les recettes, publications et utilisateurs.
-     * Retourne un tableau de resultats reutilisable par les pages d'accueil / dashboard.
+     * Exécute la recherche et retourne un jeu de résultats réutilisable par les
+     * pages d'accueil et le tableau de bord.
+     *
+     * @param  string|null  $q  Terme recherché.
+     * @return array{q: string, recettes: \Illuminate\Support\Collection, posts: \Illuminate\Support\Collection, users: \Illuminate\Support\Collection, total: int}
      */
     public static function query(?string $q): array
     {
         $q = trim((string) $q);
+
         if ($q === '') {
             return ['q' => '', 'recettes' => collect(), 'posts' => collect(), 'users' => collect(), 'total' => 0];
         }
 
         $like = '%' . $q . '%';
 
+        // Recettes correspondant au titre ou à la description.
         $recettes = Recette::with('user')->withCount('likes')
-            ->where(function ($w) use ($like) {
-                $w->where('titre', 'like', $like)->orWhere('description', 'like', $like);
+            ->where(function ($builder) use ($like) {
+                $builder->where('titre', 'like', $like)
+                        ->orWhere('description', 'like', $like);
             })
-            ->orderByDesc('likes_count')->limit(24)->get();
+            ->limit(24)
+            ->get();
 
+        // Classement personnalisé selon le profil de l'utilisateur connecté.
+        $recettes = RecommendationService::order($recettes, Auth::user());
+
+        // Publications correspondant au contenu.
         $posts = Post::with('user')->withCount(['likes', 'comments'])
             ->where('content', 'like', $like)
-            ->latest()->limit(24)->get();
+            ->latest()
+            ->limit(24)
+            ->get();
 
+        // Membres correspondant au nom, à la spécialité ou à la ville (hors administrateurs).
         $users = User::where('role', '!=', 'admin')
-            ->where(function ($w) use ($like) {
-                $w->where('name', 'like', $like)
-                  ->orWhere('specialty', 'like', $like)
-                  ->orWhere('city', 'like', $like);
+            ->where(function ($builder) use ($like) {
+                $builder->where('name', 'like', $like)
+                        ->orWhere('specialty', 'like', $like)
+                        ->orWhere('city', 'like', $like);
             })
-            ->limit(24)->get();
+            ->limit(24)
+            ->get();
 
         return [
             'q' => $q,
@@ -51,10 +75,12 @@ class SearchController extends Controller
     }
 
     /**
-     * Point d'entree de la recherche : redirige le resultat vers la page adaptee
-     * - Admin  -> tableau de bord
-     * - Membre -> page d'accueil utilisateur
-     * - Visiteur -> page des recettes (accueil public)
+     * Point d'entrée de la recherche.
+     *
+     * Redirige le résultat vers la page appropriée selon le rôle :
+     *   - administrateur : tableau de bord ;
+     *   - membre connecté : page d'accueil utilisateur ;
+     *   - visiteur : page des recettes (accueil public).
      */
     public function search(Request $request)
     {
@@ -63,9 +89,11 @@ class SearchController extends Controller
         if (Auth::check() && Auth::user()->isAdmin()) {
             return redirect()->to('/admin?q=' . urlencode($q));
         }
+
         if (Auth::check()) {
             return redirect()->to('/UserHome?q=' . urlencode($q));
         }
+
         return redirect()->to('/?q=' . urlencode($q));
     }
 }

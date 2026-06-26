@@ -6,7 +6,8 @@ FROM php:8.2-cli
 
 # --- Dépendances système et extensions PHP ---
 RUN apt-get update && apt-get install -y \
-        git unzip libzip-dev libpng-dev libonig-dev libicu-dev libcurl4-openssl-dev libsqlite3-dev \
+        git unzip libzip-dev libpng-dev libjpeg-dev libfreetype6-dev libonig-dev libicu-dev libcurl4-openssl-dev libsqlite3-dev \
+    && docker-php-ext-configure gd --with-jpeg --with-freetype \
     && docker-php-ext-install pdo_mysql pdo_sqlite mbstring zip gd intl bcmath exif \
     && rm -rf /var/lib/apt/lists/*
 

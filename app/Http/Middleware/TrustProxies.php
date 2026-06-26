@@ -10,9 +10,14 @@ class TrustProxies extends Middleware
     /**
      * The trusted proxies for this application.
      *
+     * '*' : Render (comme la plupart des PaaS) place l'app derrière un
+     * répartiteur qui termine le TLS et transmet le protocole d'origine via
+     * l'en-tête X-Forwarded-Proto. On lui fait confiance pour que Laravel
+     * détecte le HTTPS et génère des URLs/formulaires en https://.
+     *
      * @var array<int, string>|string|null
      */
-    protected $proxies;
+    protected $proxies = '*';
 
     /**
      * The headers that should be used to detect proxies.

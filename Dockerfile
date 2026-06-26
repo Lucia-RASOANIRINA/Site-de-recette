@@ -16,12 +16,15 @@ COPY --from=composer:2 /usr/bin/composer /usr/bin/composer
 WORKDIR /app
 COPY . /app
 
-# --- Installation des dépendances PHP (sans dev) ---
-RUN composer install --no-dev --optimize-autoloader --no-interaction \
-    && mkdir -p storage/app/public/recettes storage/app/public/posts storage/app/public/avatars \
+# --- Dépendances PHP : le dossier vendor/ est versionné dans le dépôt,
+#     donc aucune installation réseau n'est nécessaire au build (évite les
+#     échecs de téléchargement GitHub). On prépare juste les dossiers de
+#     stockage et le fichier SQLite. ---
+RUN mkdir -p storage/app/public/recettes storage/app/public/posts storage/app/public/avatars \
        storage/framework/cache storage/framework/sessions storage/framework/views \
+       bootstrap/cache \
     && touch database/database.sqlite \
-    && php artisan storage:link || true
+    && (php artisan storage:link || true)
 
 ENV APP_ENV=production
 ENV APP_DEBUG=false

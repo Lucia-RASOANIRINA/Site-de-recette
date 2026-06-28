@@ -86,7 +86,7 @@
                 <div class="flex items-center justify-center md:justify-start gap-4">
                     
                     <!-- Instagram -->
-                    <a href="#" class="social-icon w-11 h-11 rounded-2xl bg-white/5 flex items-center justify-center text-gray-400 hover:bg-gradient-to-br hover:from-pink-500 hover:to-orange-500 hover:text-white border border-white/10 shadow-lg">
+                    <a href="https://www.instagram.com/ouratable" target="_blank" rel="noopener" aria-label="Instagram" class="social-icon w-11 h-11 rounded-2xl bg-white/5 flex items-center justify-center text-gray-400 hover:bg-gradient-to-br hover:from-pink-500 hover:to-orange-500 hover:text-white border border-white/10 shadow-lg">
                         <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
                             <path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.649.069 4.849 0 3.2-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.2.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069z"/>
                             <path d="M12 5.838a6.162 6.162 0 100 12.324 6.162 6.162 0 000-12.324zm0 10.162a3.999 3.999 0 110-7.998 3.999 3.999 0 010 7.998z"/>
@@ -95,14 +95,14 @@
                     </a>
 
                     <!-- Facebook -->
-                    <a href="#" class="social-icon w-11 h-11 rounded-2xl bg-white/5 flex items-center justify-center text-gray-400 hover:bg-[#1877F2] hover:text-white border border-white/10 shadow-lg">
+                    <a href="https://www.facebook.com/ouratable" target="_blank" rel="noopener" aria-label="Facebook" class="social-icon w-11 h-11 rounded-2xl bg-white/5 flex items-center justify-center text-gray-400 hover:bg-[#1877F2] hover:text-white border border-white/10 shadow-lg">
                         <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
                             <path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/>
                         </svg>
                     </a>
 
                     <!-- YouTube -->
-                    <a href="#" class="social-icon w-11 h-11 rounded-2xl bg-white/5 flex items-center justify-center text-gray-400 hover:bg-[#FF0000] hover:text-white border border-white/10 shadow-lg">
+                    <a href="https://www.youtube.com/@ouratable" target="_blank" rel="noopener" aria-label="YouTube" class="social-icon w-11 h-11 rounded-2xl bg-white/5 flex items-center justify-center text-gray-400 hover:bg-[#FF0000] hover:text-white border border-white/10 shadow-lg">
                         <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
                             <path d="M23.498 6.186a3.016 3.016 0 0 0-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 0 0 .502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 0 0 2.122 2.136c1.871.505 9.377.505 9.377.505s7.505 0 9.377-.505a3.015 3.015 0 0 0 2.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814zM9.546 15.568V8.432L15.818 12l-6.272 3.568z"/>
                         </svg>
@@ -114,10 +114,13 @@
             <div class="md:col-span-3 text-center md:text-left">
                 <h4 class="text-white font-black mb-6 tracking-[0.2em] uppercase text-[11px] opacity-30">Exploration</h4>
                 <ul class="space-y-4 mb-8">
-                    @foreach(['Nos Recettes', 'La communauté'] as $link)
+                    @foreach([['Nos Recettes', '/', 'utensils-crossed'], ['La communauté', '/communaute', 'users']] as $link)
                     <li>
-                        <a href="#" class="link-underline text-gray-400 hover:text-orange-500 text-sm transition-colors inline-block font-medium">
-                            {{ $link }}
+                        <a href="{{ $link[1] }}" class="link-underline text-gray-400 hover:text-orange-500 text-sm transition-colors inline-flex items-center gap-2.5 font-medium group/nav">
+                            <span class="w-7 h-7 rounded-lg bg-white/5 flex items-center justify-center text-orange-500 group-hover/nav:bg-orange-500 group-hover/nav:text-white transition-all">
+                                <i data-lucide="{{ $link[2] }}" class="w-3.5 h-3.5"></i>
+                            </span>
+                            {{ $link[0] }}
                         </a>
                     </li>
                     @endforeach

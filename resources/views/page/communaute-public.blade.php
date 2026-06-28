@@ -4,7 +4,7 @@
 <div class="max-w-6xl mx-auto px-4 pt-28 pb-16">
 
     {{-- Hero --}}
-    <div class="relative overflow-hidden bg-gradient-to-br from-orange-500 to-orange-600 rounded-[36px] p-8 md:p-12 text-white shadow-2xl shadow-orange-500/30 mb-10">
+    <div class="relative overflow-hidden bg-orange-500 rounded-[36px] p-8 md:p-12 text-white shadow-2xl shadow-orange-500/30 mb-10">
         <div class="absolute -top-16 -right-16 w-72 h-72 bg-white/10 rounded-full blur-3xl"></div>
         <div class="relative z-10 max-w-2xl">
             <span class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-white/15 text-xs font-bold uppercase tracking-widest mb-4">

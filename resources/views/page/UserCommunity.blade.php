@@ -1020,6 +1020,7 @@
     }
 </style>
 
+<script defer src="https://cdn.jsdelivr.net/npm/@alpinejs/collapse@3.x.x/dist/cdn.min.js"></script>
 <script defer src="https://unpkg.com/alpinejs@3.x.x/dist/cdn.min.js"></script>
 
 <div x-data="app()" x-init="init()" class="min-h-screen bg-gray-50 pb-24">

@@ -940,11 +940,6 @@
                     <p class="text-sm font-semibold flex items-center gap-1 justify-end">
                         <i data-lucide="map-pin" class="w-4 h-4"></i> {{ $user->city ?? 'Cuisine du monde' }}
                     </p>
-                    @if($user->specialty)
-                    <p class="text-xs opacity-80 flex items-center gap-1 justify-end mt-0.5">
-                        <i data-lucide="chef-hat" class="w-3.5 h-3.5"></i> {{ $user->specialty }}
-                    </p>
-                    @endif
                 </div>
             </div>
             <div class="relative px-6 pb-6">
@@ -970,22 +965,6 @@
                     
                     <div class="flex-1 text-center md:text-left">
                         <h1 class="text-2xl md:text-3xl font-bold text-gray-900">{{ $user->name }}</h1>
-                        <p class="text-orange-600 text-sm mt-1">{{ $user->bio ?? 'Passionné(e) de cuisine' }}</p>
-                        <div class="flex flex-wrap items-center gap-4 mt-2 justify-center md:justify-start text-xs text-gray-500">
-                            <span class="inline-flex items-center gap-1"><i data-lucide="award" class="w-3.5 h-3.5 text-orange-500"></i> Niveau {{ $level ?? 1 }}</span>
-                            <span class="inline-flex items-center gap-1"><i data-lucide="calendar" class="w-3.5 h-3.5 text-orange-500"></i> Membre depuis {{ optional($user->created_at)->format('m/Y') }}</span>
-                            <span class="inline-flex items-center gap-1"><i data-lucide="heart" class="w-3.5 h-3.5 text-rose-500"></i> {{ $totalLikes ?? 0 }} coups de cœur</span>
-                        </div>
-                        <div class="flex flex-wrap gap-2 mt-3 justify-center md:justify-start">
-                            @foreach($badges as $badge)
-                            <span class="badge-item" title="{{ $badge['description'] ?? '' }}">
-                                <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                                    <path d="M12 2L15.09 8.26L22 9.27L17 14.14L18.18 21.02L12 17.77L5.82 21.02L7 14.14L2 9.27L8.91 8.26L12 2z"/>
-                                </svg>
-                                {{ $badge['name'] }}
-                            </span>
-                            @endforeach
-                        </div>
                     </div>
                     
                     <div class="flex gap-3">
@@ -1003,41 +982,8 @@
                             </svg>
                             Mot de passe
                         </button>
-                        <button onclick="document.getElementById('contactModal').classList.add('active')" class="btn-primary text-sm">
-                            <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                                <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/>
-                                <polyline points="22,6 12,13 2,6"/>
-                            </svg>
-                            Contacter
-                        </button>
                     </div>
                 </div>
-            </div>
-        </div>
-
-        {{-- Modal Contacter --}}
-        <div id="contactModal" class="contact-modal-overlay" onclick="if(event.target === this) this.classList.remove('active')">
-            <div class="contact-modal-box">
-                <div class="flex items-center justify-between mb-4">
-                    <h3 class="text-lg font-bold text-gray-900 flex items-center gap-2">
-                        <span class="w-9 h-9 rounded-xl bg-orange-100 text-orange-600 flex items-center justify-center">
-                            <i data-lucide="mail" class="w-5 h-5"></i>
-                        </span>
-                        Contacter l'équipe
-                    </h3>
-                    <button onclick="document.getElementById('contactModal').classList.remove('active')" class="text-gray-400 hover:text-gray-600">
-                        <i data-lucide="x" class="w-5 h-5"></i>
-                    </button>
-                </div>
-                <p class="text-xs text-gray-500 mb-4">Votre message est envoyé à l'administration (messagerie + email).</p>
-                <form action="{{ route('profile.contact') }}" method="POST" class="space-y-3">
-                    @csrf
-                    <input name="sujet" required maxlength="150" placeholder="Sujet" class="edit-field">
-                    <textarea name="message" required maxlength="2000" rows="5" placeholder="Votre message..." class="edit-field"></textarea>
-                    <button type="submit" class="btn-primary w-full justify-center">
-                        <i data-lucide="send" class="w-4 h-4"></i> Envoyer le message
-                    </button>
-                </form>
             </div>
         </div>
 
@@ -1074,30 +1020,6 @@
                 <div class="text-2xl font-bold text-gray-900">{{ $totalLikesReceived ?? 0 }}</div>
                 <div class="text-xs text-gray-500 mt-1">J'aime reçus</div>
             </div>
-        </div>
-
-        {{-- Niveau et progression --}}
-        <div class="level-card mb-8">
-            <div class="flex items-center justify-between mb-2">
-                <div class="flex items-center gap-2">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#f97316" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                        <path d="M12 2L15.09 8.26L22 9.27L17 14.14L18.18 21.02L12 17.77L5.82 21.02L7 14.14L2 9.27L8.91 8.26L12 2z"/>
-                    </svg>
-                    <span class="font-bold text-gray-800">Niveau {{ $level ?? 1 }}</span>
-                </div>
-                <span class="text-sm text-gray-500">{{ $xp ?? 0 }} / {{ $nextLevelXp ?? 1000 }} XP</span>
-            </div>
-            <div class="progress-bar">
-                <div class="progress-fill" style="width: {{ $xpProgress ?? 0 }}%"></div>
-            </div>
-            <p class="text-xs text-gray-400 mt-2 flex items-center gap-1">
-                <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                    <circle cx="12" cy="12" r="10"/>
-                    <line x1="12" y1="8" x2="12" y2="12"/>
-                    <line x1="12" y1="16" x2="12.01" y2="16"/>
-                </svg>
-                Gagnez de l'XP en publiant, commentant et recevant des likes !
-            </p>
         </div>
 
         {{-- Espace COUP DE FOUDRE --}}

@@ -346,7 +346,8 @@
     }
 </style>
 
-<!-- AlpineJS pour gérer afficher/cacher -->
+<!-- AlpineJS pour gérer afficher/cacher (+ plugin Collapse pour x-collapse) -->
+<script defer src="https://cdn.jsdelivr.net/npm/@alpinejs/collapse@3.x.x/dist/cdn.min.js"></script>
 <script defer src="https://unpkg.com/alpinejs@3.x.x/dist/cdn.min.js"></script>
 
 <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8"
